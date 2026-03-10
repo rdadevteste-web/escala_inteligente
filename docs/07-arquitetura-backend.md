@@ -40,20 +40,18 @@ backend/
 
 ## Banco e auditoria
 
-* A migration `database/migrations/001_initial_foundation.sql` cria a base de Administracao e a infraestrutura de logs.
-* A migration `database/migrations/002_admin_uniqueness.sql` adiciona indices unicos para segurar integridade sem depender apenas da aplicacao.
-* A migration `database/migrations/003_admin_rbac_indexes.sql` melhora consulta dos vinculos de acesso.
+* As migrations `001` a `004` constroem a base inicial de Administracao, RBAC, auditoria e integridade estrutural.
 * A funcao `audit_row_changes()` registra `insert`, `update` e `delete` em `auditoria_logs`.
 * A funcao `set_row_timestamps()` padroniza `created_at` e `updated_at`.
 * `sistema_logs` fica reservado para falhas tecnicas, integracoes e eventos de runtime.
-* O backend passa o usuario operador para o banco pelo header `x-user-id`, permitindo preencher o contexto `app.current_user_id` para as triggers de auditoria.
+* O backend passa o usuario operador ao banco a partir do bearer token, preenchendo `app.current_user_id` para as triggers de auditoria.
 
-## Autenticacao inicial
+## Autenticacao e autorizacao iniciais
 
-* Senhas passam a ser armazenadas com hash via `scrypt` nativo do Node.
+* Senhas sao armazenadas com hash via `scrypt` nativo do Node.
 * O endpoint `POST /api/v1/administracao/auth/login` valida `login` e `senha`.
-* O login retorna um token assinado em HMAC SHA-256 e a lista de perfis do usuario.
-* O segredo do token e configurado em `AUTH_TOKEN_SECRET`.
+* O login retorna token assinado em HMAC SHA-256 com `sub`, perfis e permissoes.
+* As rotas administrativas agora exigem Bearer token e validam permissao por chave como `administracao:gerenciar_usuarios`.
 
 ## CRUD inicial implementado
 
@@ -62,11 +60,15 @@ O modulo `administracao` ja possui CRUD inicial para:
 * `usuarios`
 * `perfis_acesso`
 * `permissoes`
-* vinculo `usuario_perfis`
-* vinculo `perfil_permissoes`
+* `usuario_perfis`
+* `perfil_permissoes`
+* `aeroportos`
+* `filiais`
+* `cargos`
 
 ## Proximo incremento sugerido
 
-1. Aplicar middleware de autorizacao usando o token emitido no login.
-2. Criar CRUD de `filiais`, `aeroportos` e `cargos`.
-3. Depois abrir Comercial, RH e Operacional no mesmo padrao.
+1. Criar seed inicial de permissoes e perfil administrador.
+2. Adicionar middleware reutilizavel para popular contexto autenticado na aplicacao inteira.
+3. Abrir `funcoes_operacionais`, `tipos_jornada` e `escalas_modelo`.
+4. Depois iniciar Comercial no mesmo padrao.

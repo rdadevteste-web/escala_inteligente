@@ -24,6 +24,21 @@ export const createUserProfileRepository = (database) => ({
     return result.rows;
   },
 
+  async findPermissionKeysByUserId(userId) {
+    const result = await database.query(
+      `SELECT DISTINCT CONCAT(pm.modulo, ':', pm.acao) AS permission_key
+       FROM usuario_perfis up
+       INNER JOIN perfil_permissoes pp ON pp.perfil_id = up.perfil_id AND pp.deleted_at IS NULL
+       INNER JOIN permissoes pm ON pm.id = pp.permissao_id AND pm.deleted_at IS NULL
+       WHERE up.usuario_id = $1
+         AND up.deleted_at IS NULL
+         AND up.status = 'ativo'`,
+      [userId],
+    );
+
+    return result.rows.map((row) => row.permission_key);
+  },
+
   async create(input, actorId) {
     return database.withUserContext(actorId, async (client) => {
       const result = await client.query(

@@ -1,199 +1,189 @@
-import { getActorIdFromRequest } from '../../shared/database/request-context.js';
+import { getActorIdFromRequest, requireAuthenticated, requirePermission } from '../../shared/database/request-context.js';
 import { AppError } from '../../shared/errors/app-error.js';
 import { readJson } from '../../shared/http/read-json.js';
 import { sendJson } from '../../shared/http/response.js';
-import { createAdministracaoService } from './service.js';
+import { createAirportRepository } from './airport-repository.js';
+import { createBranchRepository } from './branch-repository.js';
 import { createPermissionRepository } from './permission-repository.js';
+import { createPositionRepository } from './position-repository.js';
 import { createProfilePermissionRepository } from './profile-permission-repository.js';
 import { createProfileRepository } from './profile-repository.js';
+import { createAdministracaoService } from './service.js';
 import { createUserProfileRepository } from './user-profile-repository.js';
 import { createUserRepository } from './user-repository.js';
 
 const parseId = (value) => {
   const parsed = Number(value);
-
-  if (!Number.isInteger(parsed) || parsed <= 0) {
-    throw new AppError('Identificador invalido.', 400);
-  }
-
+  if (!Number.isInteger(parsed) || parsed <= 0) throw new AppError('Identificador invalido.', 400);
   return parsed;
 };
 
-export const createAdministracaoModule = () => {
-  return {
-    key: 'administracao',
-    name: 'Administracao',
-    version: '1.0.0',
-    description: 'Cadastros estruturais, acesso e parametros do ERP.',
-    registerRoutes(router, context) {
-      const service = createAdministracaoService({
-        userRepository: createUserRepository(context.database),
-        profileRepository: createProfileRepository(context.database),
-        permissionRepository: createPermissionRepository(context.database),
-        userProfileRepository: createUserProfileRepository(context.database),
-        profilePermissionRepository: createProfilePermissionRepository(context.database),
-        env: context.env,
-      });
-
-      router.add('GET', '/api/v1/administracao', async (_request, response) => {
-        sendJson(response, 200, service.getOverview());
-      });
-
-      router.add('POST', '/api/v1/administracao/auth/login', async (request, response) => {
-        const payload = await readJson(request);
-        const session = await service.login(payload);
-        sendJson(response, 200, session);
-      });
-
-      router.add('GET', '/api/v1/administracao/usuarios', async (_request, response) => {
-        sendJson(response, 200, {
-          items: await service.listUsers(),
-        });
-      });
-
-      router.add('GET', '/api/v1/administracao/usuarios/:id', async (_request, response, requestContext) => {
-        const user = await service.getUserById(parseId(requestContext.params.id));
-        sendJson(response, 200, user);
-      });
-
-      router.add('POST', '/api/v1/administracao/usuarios', async (request, response) => {
-        const actorId = getActorIdFromRequest(request);
-        const payload = await readJson(request);
-        const user = await service.createUser(payload, actorId);
-
-        sendJson(response, 201, user);
-      });
-
-      router.add('PUT', '/api/v1/administracao/usuarios/:id', async (request, response, requestContext) => {
-        const actorId = getActorIdFromRequest(request);
-        const payload = await readJson(request);
-        const user = await service.updateUser(parseId(requestContext.params.id), payload, actorId);
-
-        sendJson(response, 200, user);
-      });
-
-      router.add('DELETE', '/api/v1/administracao/usuarios/:id', async (request, response, requestContext) => {
-        const actorId = getActorIdFromRequest(request);
-        const user = await service.deleteUser(parseId(requestContext.params.id), actorId);
-
-        sendJson(response, 200, user);
-      });
-
-      router.add('GET', '/api/v1/administracao/perfis', async (_request, response) => {
-        sendJson(response, 200, {
-          items: await service.listProfiles(),
-        });
-      });
-
-      router.add('GET', '/api/v1/administracao/perfis/:id', async (_request, response, requestContext) => {
-        const profile = await service.getProfileById(parseId(requestContext.params.id));
-        sendJson(response, 200, profile);
-      });
-
-      router.add('POST', '/api/v1/administracao/perfis', async (request, response) => {
-        const actorId = getActorIdFromRequest(request);
-        const payload = await readJson(request);
-        const profile = await service.createProfile(payload, actorId);
-
-        sendJson(response, 201, profile);
-      });
-
-      router.add('PUT', '/api/v1/administracao/perfis/:id', async (request, response, requestContext) => {
-        const actorId = getActorIdFromRequest(request);
-        const payload = await readJson(request);
-        const profile = await service.updateProfile(parseId(requestContext.params.id), payload, actorId);
-
-        sendJson(response, 200, profile);
-      });
-
-      router.add('DELETE', '/api/v1/administracao/perfis/:id', async (request, response, requestContext) => {
-        const actorId = getActorIdFromRequest(request);
-        const profile = await service.deleteProfile(parseId(requestContext.params.id), actorId);
-
-        sendJson(response, 200, profile);
-      });
-
-      router.add('GET', '/api/v1/administracao/perfis/:id/permissoes', async (_request, response, requestContext) => {
-        const items = await service.listProfilePermissions(parseId(requestContext.params.id));
-        sendJson(response, 200, { items });
-      });
-
-      router.add('POST', '/api/v1/administracao/perfis/:id/permissoes', async (request, response, requestContext) => {
-        const actorId = getActorIdFromRequest(request);
-        const payload = await readJson(request);
-        const assignment = await service.assignPermissionToProfile(parseId(requestContext.params.id), payload, actorId);
-
-        sendJson(response, 201, assignment);
-      });
-
-      router.add('DELETE', '/api/v1/administracao/perfis/:id/permissoes/:assignmentId', async (request, response, requestContext) => {
-        const actorId = getActorIdFromRequest(request);
-        const assignment = await service.unassignPermissionFromProfile(
-          parseId(requestContext.params.id),
-          parseId(requestContext.params.assignmentId),
-          actorId,
-        );
-
-        sendJson(response, 200, assignment);
-      });
-
-      router.add('GET', '/api/v1/administracao/permissoes', async (_request, response) => {
-        sendJson(response, 200, {
-          items: await service.listPermissions(),
-        });
-      });
-
-      router.add('GET', '/api/v1/administracao/permissoes/:id', async (_request, response, requestContext) => {
-        const permission = await service.getPermissionById(parseId(requestContext.params.id));
-        sendJson(response, 200, permission);
-      });
-
-      router.add('POST', '/api/v1/administracao/permissoes', async (request, response) => {
-        const actorId = getActorIdFromRequest(request);
-        const payload = await readJson(request);
-        const permission = await service.createPermission(payload, actorId);
-
-        sendJson(response, 201, permission);
-      });
-
-      router.add('PUT', '/api/v1/administracao/permissoes/:id', async (request, response, requestContext) => {
-        const actorId = getActorIdFromRequest(request);
-        const payload = await readJson(request);
-        const permission = await service.updatePermission(parseId(requestContext.params.id), payload, actorId);
-
-        sendJson(response, 200, permission);
-      });
-
-      router.add('DELETE', '/api/v1/administracao/permissoes/:id', async (request, response, requestContext) => {
-        const actorId = getActorIdFromRequest(request);
-        const permission = await service.deletePermission(parseId(requestContext.params.id), actorId);
-
-        sendJson(response, 200, permission);
-      });
-
-      router.add('GET', '/api/v1/administracao/usuarios/:id/perfis', async (_request, response, requestContext) => {
-        const items = await service.listUserProfiles(parseId(requestContext.params.id));
-        sendJson(response, 200, { items });
-      });
-
-      router.add('POST', '/api/v1/administracao/usuarios/:id/perfis', async (request, response, requestContext) => {
-        const actorId = getActorIdFromRequest(request);
-        const payload = await readJson(request);
-        const assignment = await service.assignProfileToUser(parseId(requestContext.params.id), payload, actorId);
-
-        sendJson(response, 201, assignment);
-      });
-
-      router.add('DELETE', '/api/v1/administracao/usuarios/:id/perfis/:assignmentId', async (request, response, requestContext) => {
-        const actorId = getActorIdFromRequest(request);
-        const assignment = await service.unassignProfileFromUser(
-          parseId(requestContext.params.id),
-          parseId(requestContext.params.assignmentId),
-          actorId,
-        );
-
-        sendJson(response, 200, assignment);
-      });
-    },
-  };
+const withPermission = (env, permissionKey, handler) => async (request, response, context) => {
+  requirePermission(request, env, permissionKey);
+  return handler(request, response, context);
 };
+
+const withAuth = (env, handler) => async (request, response, context) => {
+  requireAuthenticated(request, env);
+  return handler(request, response, context);
+};
+
+export const createAdministracaoModule = () => ({
+  key: 'administracao',
+  name: 'Administracao',
+  version: '1.0.0',
+  description: 'Cadastros estruturais, acesso e parametros do ERP.',
+  registerRoutes(router, context) {
+    const service = createAdministracaoService({
+      userRepository: createUserRepository(context.database),
+      profileRepository: createProfileRepository(context.database),
+      permissionRepository: createPermissionRepository(context.database),
+      userProfileRepository: createUserProfileRepository(context.database),
+      profilePermissionRepository: createProfilePermissionRepository(context.database),
+      airportRepository: createAirportRepository(context.database),
+      branchRepository: createBranchRepository(context.database),
+      positionRepository: createPositionRepository(context.database),
+      env: context.env,
+    });
+    const env = context.env;
+
+    router.add('GET', '/api/v1/administracao', withAuth(env, async (_request, response) => {
+      sendJson(response, 200, service.getOverview());
+    }));
+
+    router.add('POST', '/api/v1/administracao/auth/login', async (request, response) => {
+      const payload = await readJson(request);
+      const session = await service.login(payload);
+      sendJson(response, 200, session);
+    });
+
+    router.add('GET', '/api/v1/administracao/usuarios', withPermission(env, 'administracao:gerenciar_usuarios', async (_request, response) => {
+      sendJson(response, 200, { items: await service.listUsers() });
+    }));
+    router.add('GET', '/api/v1/administracao/usuarios/:id', withPermission(env, 'administracao:gerenciar_usuarios', async (_request, response, requestContext) => {
+      sendJson(response, 200, await service.getUserById(parseId(requestContext.params.id)));
+    }));
+    router.add('POST', '/api/v1/administracao/usuarios', withPermission(env, 'administracao:gerenciar_usuarios', async (request, response) => {
+      const payload = await readJson(request);
+      sendJson(response, 201, await service.createUser(payload, getActorIdFromRequest(request, env)));
+    }));
+    router.add('PUT', '/api/v1/administracao/usuarios/:id', withPermission(env, 'administracao:gerenciar_usuarios', async (request, response, requestContext) => {
+      const payload = await readJson(request);
+      sendJson(response, 200, await service.updateUser(parseId(requestContext.params.id), payload, getActorIdFromRequest(request, env)));
+    }));
+    router.add('DELETE', '/api/v1/administracao/usuarios/:id', withPermission(env, 'administracao:gerenciar_usuarios', async (request, response, requestContext) => {
+      sendJson(response, 200, await service.deleteUser(parseId(requestContext.params.id), getActorIdFromRequest(request, env)));
+    }));
+
+    router.add('GET', '/api/v1/administracao/perfis', withPermission(env, 'administracao:gerenciar_perfis', async (_request, response) => {
+      sendJson(response, 200, { items: await service.listProfiles() });
+    }));
+    router.add('GET', '/api/v1/administracao/perfis/:id', withPermission(env, 'administracao:gerenciar_perfis', async (_request, response, requestContext) => {
+      sendJson(response, 200, await service.getProfileById(parseId(requestContext.params.id)));
+    }));
+    router.add('POST', '/api/v1/administracao/perfis', withPermission(env, 'administracao:gerenciar_perfis', async (request, response) => {
+      const payload = await readJson(request);
+      sendJson(response, 201, await service.createProfile(payload, getActorIdFromRequest(request, env)));
+    }));
+    router.add('PUT', '/api/v1/administracao/perfis/:id', withPermission(env, 'administracao:gerenciar_perfis', async (request, response, requestContext) => {
+      const payload = await readJson(request);
+      sendJson(response, 200, await service.updateProfile(parseId(requestContext.params.id), payload, getActorIdFromRequest(request, env)));
+    }));
+    router.add('DELETE', '/api/v1/administracao/perfis/:id', withPermission(env, 'administracao:gerenciar_perfis', async (request, response, requestContext) => {
+      sendJson(response, 200, await service.deleteProfile(parseId(requestContext.params.id), getActorIdFromRequest(request, env)));
+    }));
+    router.add('GET', '/api/v1/administracao/perfis/:id/permissoes', withPermission(env, 'administracao:gerenciar_perfis', async (_request, response, requestContext) => {
+      sendJson(response, 200, { items: await service.listProfilePermissions(parseId(requestContext.params.id)) });
+    }));
+    router.add('POST', '/api/v1/administracao/perfis/:id/permissoes', withPermission(env, 'administracao:gerenciar_perfis', async (request, response, requestContext) => {
+      const payload = await readJson(request);
+      sendJson(response, 201, await service.assignPermissionToProfile(parseId(requestContext.params.id), payload, getActorIdFromRequest(request, env)));
+    }));
+    router.add('DELETE', '/api/v1/administracao/perfis/:id/permissoes/:assignmentId', withPermission(env, 'administracao:gerenciar_perfis', async (request, response, requestContext) => {
+      sendJson(response, 200, await service.unassignPermissionFromProfile(parseId(requestContext.params.id), parseId(requestContext.params.assignmentId), getActorIdFromRequest(request, env)));
+    }));
+
+    router.add('GET', '/api/v1/administracao/permissoes', withPermission(env, 'administracao:gerenciar_permissoes', async (_request, response) => {
+      sendJson(response, 200, { items: await service.listPermissions() });
+    }));
+    router.add('GET', '/api/v1/administracao/permissoes/:id', withPermission(env, 'administracao:gerenciar_permissoes', async (_request, response, requestContext) => {
+      sendJson(response, 200, await service.getPermissionById(parseId(requestContext.params.id)));
+    }));
+    router.add('POST', '/api/v1/administracao/permissoes', withPermission(env, 'administracao:gerenciar_permissoes', async (request, response) => {
+      const payload = await readJson(request);
+      sendJson(response, 201, await service.createPermission(payload, getActorIdFromRequest(request, env)));
+    }));
+    router.add('PUT', '/api/v1/administracao/permissoes/:id', withPermission(env, 'administracao:gerenciar_permissoes', async (request, response, requestContext) => {
+      const payload = await readJson(request);
+      sendJson(response, 200, await service.updatePermission(parseId(requestContext.params.id), payload, getActorIdFromRequest(request, env)));
+    }));
+    router.add('DELETE', '/api/v1/administracao/permissoes/:id', withPermission(env, 'administracao:gerenciar_permissoes', async (request, response, requestContext) => {
+      sendJson(response, 200, await service.deletePermission(parseId(requestContext.params.id), getActorIdFromRequest(request, env)));
+    }));
+
+    router.add('GET', '/api/v1/administracao/usuarios/:id/perfis', withPermission(env, 'administracao:gerenciar_usuarios', async (_request, response, requestContext) => {
+      sendJson(response, 200, { items: await service.listUserProfiles(parseId(requestContext.params.id)) });
+    }));
+    router.add('POST', '/api/v1/administracao/usuarios/:id/perfis', withPermission(env, 'administracao:gerenciar_usuarios', async (request, response, requestContext) => {
+      const payload = await readJson(request);
+      sendJson(response, 201, await service.assignProfileToUser(parseId(requestContext.params.id), payload, getActorIdFromRequest(request, env)));
+    }));
+    router.add('DELETE', '/api/v1/administracao/usuarios/:id/perfis/:assignmentId', withPermission(env, 'administracao:gerenciar_usuarios', async (request, response, requestContext) => {
+      sendJson(response, 200, await service.unassignProfileFromUser(parseId(requestContext.params.id), parseId(requestContext.params.assignmentId), getActorIdFromRequest(request, env)));
+    }));
+
+    router.add('GET', '/api/v1/administracao/aeroportos', withPermission(env, 'administracao:gerenciar_aeroportos', async (_request, response) => {
+      sendJson(response, 200, { items: await service.listAirports() });
+    }));
+    router.add('GET', '/api/v1/administracao/aeroportos/:id', withPermission(env, 'administracao:gerenciar_aeroportos', async (_request, response, requestContext) => {
+      sendJson(response, 200, await service.getAirportById(parseId(requestContext.params.id)));
+    }));
+    router.add('POST', '/api/v1/administracao/aeroportos', withPermission(env, 'administracao:gerenciar_aeroportos', async (request, response) => {
+      const payload = await readJson(request);
+      sendJson(response, 201, await service.createAirport(payload, getActorIdFromRequest(request, env)));
+    }));
+    router.add('PUT', '/api/v1/administracao/aeroportos/:id', withPermission(env, 'administracao:gerenciar_aeroportos', async (request, response, requestContext) => {
+      const payload = await readJson(request);
+      sendJson(response, 200, await service.updateAirport(parseId(requestContext.params.id), payload, getActorIdFromRequest(request, env)));
+    }));
+    router.add('DELETE', '/api/v1/administracao/aeroportos/:id', withPermission(env, 'administracao:gerenciar_aeroportos', async (request, response, requestContext) => {
+      sendJson(response, 200, await service.deleteAirport(parseId(requestContext.params.id), getActorIdFromRequest(request, env)));
+    }));
+
+    router.add('GET', '/api/v1/administracao/filiais', withPermission(env, 'administracao:gerenciar_filiais', async (_request, response) => {
+      sendJson(response, 200, { items: await service.listBranches() });
+    }));
+    router.add('GET', '/api/v1/administracao/filiais/:id', withPermission(env, 'administracao:gerenciar_filiais', async (_request, response, requestContext) => {
+      sendJson(response, 200, await service.getBranchById(parseId(requestContext.params.id)));
+    }));
+    router.add('POST', '/api/v1/administracao/filiais', withPermission(env, 'administracao:gerenciar_filiais', async (request, response) => {
+      const payload = await readJson(request);
+      sendJson(response, 201, await service.createBranch(payload, getActorIdFromRequest(request, env)));
+    }));
+    router.add('PUT', '/api/v1/administracao/filiais/:id', withPermission(env, 'administracao:gerenciar_filiais', async (request, response, requestContext) => {
+      const payload = await readJson(request);
+      sendJson(response, 200, await service.updateBranch(parseId(requestContext.params.id), payload, getActorIdFromRequest(request, env)));
+    }));
+    router.add('DELETE', '/api/v1/administracao/filiais/:id', withPermission(env, 'administracao:gerenciar_filiais', async (request, response, requestContext) => {
+      sendJson(response, 200, await service.deleteBranch(parseId(requestContext.params.id), getActorIdFromRequest(request, env)));
+    }));
+
+    router.add('GET', '/api/v1/administracao/cargos', withPermission(env, 'administracao:gerenciar_cargos', async (_request, response) => {
+      sendJson(response, 200, { items: await service.listPositions() });
+    }));
+    router.add('GET', '/api/v1/administracao/cargos/:id', withPermission(env, 'administracao:gerenciar_cargos', async (_request, response, requestContext) => {
+      sendJson(response, 200, await service.getPositionById(parseId(requestContext.params.id)));
+    }));
+    router.add('POST', '/api/v1/administracao/cargos', withPermission(env, 'administracao:gerenciar_cargos', async (request, response) => {
+      const payload = await readJson(request);
+      sendJson(response, 201, await service.createPosition(payload, getActorIdFromRequest(request, env)));
+    }));
+    router.add('PUT', '/api/v1/administracao/cargos/:id', withPermission(env, 'administracao:gerenciar_cargos', async (request, response, requestContext) => {
+      const payload = await readJson(request);
+      sendJson(response, 200, await service.updatePosition(parseId(requestContext.params.id), payload, getActorIdFromRequest(request, env)));
+    }));
+    router.add('DELETE', '/api/v1/administracao/cargos/:id', withPermission(env, 'administracao:gerenciar_cargos', async (request, response, requestContext) => {
+      sendJson(response, 200, await service.deletePosition(parseId(requestContext.params.id), getActorIdFromRequest(request, env)));
+    }));
+  },
+});

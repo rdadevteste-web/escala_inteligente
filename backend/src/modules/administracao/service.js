@@ -1,4 +1,6 @@
 import { AppError } from '../../shared/errors/app-error.js';
+import { hashPassword, verifyPassword } from '../../shared/security/password.js';
+import { signToken } from '../../shared/security/token.js';
 
 const administracaoSummary = {
   entities: [
@@ -28,7 +30,7 @@ const validateRequiredFields = (payload, fields) => {
   }
 };
 
-const validateUserPayload = (payload, mode = 'create') => {
+const validateUserPayload = async (payload, mode = 'create') => {
   validateRequiredFields(payload, ['nome', 'email', 'login']);
 
   if (mode === 'create' && !payload.senha) {
@@ -39,7 +41,7 @@ const validateUserPayload = (payload, mode = 'create') => {
     nome: payload.nome,
     email: payload.email,
     login: payload.login,
-    senhaHash: payload.senha ?? 'definir-senha-segura',
+    senhaHash: payload.senha ? await hashPassword(payload.senha) : null,
     status: normalizeStatus(payload.status),
   };
 };
@@ -65,7 +67,7 @@ const validatePermissionPayload = (payload) => {
   };
 };
 
-const validateAssignmentPayload = (payload) => {
+const validateUserProfilePayload = (payload) => {
   validateRequiredFields(payload, ['perfilId']);
 
   return {
@@ -74,16 +76,62 @@ const validateAssignmentPayload = (payload) => {
   };
 };
 
+const validateProfilePermissionPayload = (payload) => {
+  validateRequiredFields(payload, ['permissaoId']);
+
+  return {
+    permissaoId: Number(payload.permissaoId),
+  };
+};
+
 export const createAdministracaoService = ({
   userRepository,
   profileRepository,
   permissionRepository,
   userProfileRepository,
+  profilePermissionRepository,
+  env,
 }) => ({
   getOverview() {
     return {
       module: 'administracao',
       ...administracaoSummary,
+    };
+  },
+
+  async login(payload) {
+    validateRequiredFields(payload, ['login', 'senha']);
+    const user = await userRepository.findAuthByLogin(payload.login);
+
+    if (!user || user.status !== 'ativo') {
+      throw new AppError('Credenciais invalidas.', 401);
+    }
+
+    const validPassword = await verifyPassword(payload.senha, user.senha_hash);
+
+    if (!validPassword) {
+      throw new AppError('Credenciais invalidas.', 401);
+    }
+
+    const profiles = await userProfileRepository.findByUserId(user.id);
+    await userRepository.touchLastAccess(user.id);
+
+    return {
+      token: signToken(
+        {
+          sub: user.id,
+          login: user.login,
+          perfis: profiles.map((profile) => profile.perfil_nome),
+        },
+        env.appName,
+      ),
+      usuario: {
+        id: user.id,
+        nome: user.nome,
+        email: user.email,
+        login: user.login,
+      },
+      perfis: profiles,
     };
   },
 
@@ -102,12 +150,12 @@ export const createAdministracaoService = ({
   },
 
   async createUser(payload, actorId) {
-    const input = validateUserPayload(payload, 'create');
+    const input = await validateUserPayload(payload, 'create');
     return userRepository.create(input, actorId);
   },
 
   async updateUser(id, payload, actorId) {
-    const input = validateUserPayload(payload, 'update');
+    const input = await validateUserPayload(payload, 'update');
     const user = await userRepository.update(id, input, actorId);
 
     if (!user) {
@@ -210,7 +258,7 @@ export const createAdministracaoService = ({
 
   async assignProfileToUser(userId, payload, actorId) {
     await this.getUserById(userId);
-    const assignment = validateAssignmentPayload(payload);
+    const assignment = validateUserProfilePayload(payload);
     await this.getProfileById(assignment.perfilId);
 
     return userProfileRepository.create(
@@ -233,6 +281,40 @@ export const createAdministracaoService = ({
 
     if (assignment.usuario_id !== userId) {
       throw new AppError('O vinculo nao pertence ao usuario informado.', 400);
+    }
+
+    return assignment;
+  },
+
+  async listProfilePermissions(profileId) {
+    await this.getProfileById(profileId);
+    return profilePermissionRepository.findByProfileId(profileId);
+  },
+
+  async assignPermissionToProfile(profileId, payload, actorId) {
+    await this.getProfileById(profileId);
+    const assignment = validateProfilePermissionPayload(payload);
+    await this.getPermissionById(assignment.permissaoId);
+
+    return profilePermissionRepository.create(
+      {
+        perfilId: profileId,
+        permissaoId: assignment.permissaoId,
+      },
+      actorId,
+    );
+  },
+
+  async unassignPermissionFromProfile(profileId, assignmentId, actorId) {
+    await this.getProfileById(profileId);
+    const assignment = await profilePermissionRepository.softDelete(assignmentId, actorId);
+
+    if (!assignment) {
+      throw new AppError('Vinculo perfil-permissao nao encontrado.', 404);
+    }
+
+    if (assignment.perfil_id !== profileId) {
+      throw new AppError('O vinculo nao pertence ao perfil informado.', 400);
     }
 
     return assignment;

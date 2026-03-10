@@ -37,6 +37,28 @@ export const createUserRepository = (database) => ({
     return result.rows[0] ?? null;
   },
 
+  async findAuthByLogin(login) {
+    const result = await database.query(
+      `SELECT id, nome, email, login, senha_hash, status
+       FROM usuarios
+       WHERE login = $1
+         AND deleted_at IS NULL`,
+      [login],
+    );
+
+    return result.rows[0] ?? null;
+  },
+
+  async touchLastAccess(id) {
+    await database.query(
+      `UPDATE usuarios
+       SET ultimo_acesso_em = NOW(),
+           updated_at = NOW()
+       WHERE id = $1`,
+      [id],
+    );
+  },
+
   async create(input, actorId) {
     return database.withUserContext(actorId, async (client) => {
       const result = await client.query(

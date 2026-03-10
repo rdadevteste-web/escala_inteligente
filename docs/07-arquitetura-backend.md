@@ -22,6 +22,7 @@ backend/
       http/
       logger/
       modules/
+      security/
     modules/
       administracao/
       comercial/
@@ -41,10 +42,18 @@ backend/
 
 * A migration `database/migrations/001_initial_foundation.sql` cria a base de Administracao e a infraestrutura de logs.
 * A migration `database/migrations/002_admin_uniqueness.sql` adiciona indices unicos para segurar integridade sem depender apenas da aplicacao.
+* A migration `database/migrations/003_admin_rbac_indexes.sql` melhora consulta dos vinculos de acesso.
 * A funcao `audit_row_changes()` registra `insert`, `update` e `delete` em `auditoria_logs`.
 * A funcao `set_row_timestamps()` padroniza `created_at` e `updated_at`.
 * `sistema_logs` fica reservado para falhas tecnicas, integracoes e eventos de runtime.
 * O backend passa o usuario operador para o banco pelo header `x-user-id`, permitindo preencher o contexto `app.current_user_id` para as triggers de auditoria.
+
+## Autenticacao inicial
+
+* Senhas passam a ser armazenadas com hash via `scrypt` nativo do Node.
+* O endpoint `POST /api/v1/administracao/auth/login` valida `login` e `senha`.
+* O login retorna um token assinado em HMAC SHA-256 e a lista de perfis do usuario.
+* O segredo do token e configurado em `AUTH_TOKEN_SECRET`.
 
 ## CRUD inicial implementado
 
@@ -54,28 +63,10 @@ O modulo `administracao` ja possui CRUD inicial para:
 * `perfis_acesso`
 * `permissoes`
 * vinculo `usuario_perfis`
-
-Rotas principais:
-
-* `GET /api/v1/administracao/usuarios`
-* `POST /api/v1/administracao/usuarios`
-* `PUT /api/v1/administracao/usuarios/:id`
-* `DELETE /api/v1/administracao/usuarios/:id`
-* `GET /api/v1/administracao/perfis`
-* `POST /api/v1/administracao/perfis`
-* `PUT /api/v1/administracao/perfis/:id`
-* `DELETE /api/v1/administracao/perfis/:id`
-* `GET /api/v1/administracao/permissoes`
-* `POST /api/v1/administracao/permissoes`
-* `PUT /api/v1/administracao/permissoes/:id`
-* `DELETE /api/v1/administracao/permissoes/:id`
-* `GET /api/v1/administracao/usuarios/:id/perfis`
-* `POST /api/v1/administracao/usuarios/:id/perfis`
-* `DELETE /api/v1/administracao/usuarios/:id/perfis/:assignmentId`
+* vinculo `perfil_permissoes`
 
 ## Proximo incremento sugerido
 
-1. Implementar `perfil_permissoes` para fechar o RBAC.
-2. Adicionar autenticacao e hash real de senha.
-3. Criar segunda onda de repositorios para `filiais`, `aeroportos` e `cargos`.
-4. Depois abrir Comercial, RH e Operacional no mesmo padrao.
+1. Aplicar middleware de autorizacao usando o token emitido no login.
+2. Criar CRUD de `filiais`, `aeroportos` e `cargos`.
+3. Depois abrir Comercial, RH e Operacional no mesmo padrao.

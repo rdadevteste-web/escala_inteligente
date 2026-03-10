@@ -11,4 +11,5 @@ export const env = {
   databaseUrl:
     process.env.DATABASE_URL ||
     'postgres://postgres:postgres@localhost:5432/erp_aeroportuario',
+  authTokenSecret: process.env.AUTH_TOKEN_SECRET || 'erp-aeroportuario-dev-secret',
 };

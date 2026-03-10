@@ -21,6 +21,7 @@ database/
   migrations/
     001_initial_foundation.sql
     002_admin_uniqueness.sql
+    003_admin_rbac_indexes.sql
   seeds/
   diagramas/
     mvp-dicionario-dados.csv
@@ -51,8 +52,9 @@ npm.cmd install
 node src/server.js
 ```
 
-Rotas iniciais de Administracao:
+Rotas de acesso e Administracao:
 
+* `POST /api/v1/administracao/auth/login`
 * `GET /api/v1/administracao/usuarios`
 * `GET /api/v1/administracao/usuarios/:id`
 * `POST /api/v1/administracao/usuarios`
@@ -63,6 +65,9 @@ Rotas iniciais de Administracao:
 * `POST /api/v1/administracao/perfis`
 * `PUT /api/v1/administracao/perfis/:id`
 * `DELETE /api/v1/administracao/perfis/:id`
+* `GET /api/v1/administracao/perfis/:id/permissoes`
+* `POST /api/v1/administracao/perfis/:id/permissoes`
+* `DELETE /api/v1/administracao/perfis/:id/permissoes/:assignmentId`
 * `GET /api/v1/administracao/permissoes`
 * `GET /api/v1/administracao/permissoes/:id`
 * `POST /api/v1/administracao/permissoes`
@@ -85,8 +90,8 @@ Para propagar o usuario responsavel para auditoria automatica no banco, envie o 
 
 ## Banco de dados
 
-As migrations [001_initial_foundation.sql](database/migrations/001_initial_foundation.sql) e [002_admin_uniqueness.sql](database/migrations/002_admin_uniqueness.sql) criam a base inicial de Administracao, `auditoria_logs`, `sistema_logs`, triggers de auditoria e restricoes de unicidade para o modulo.
+As migrations [001_initial_foundation.sql](database/migrations/001_initial_foundation.sql), [002_admin_uniqueness.sql](database/migrations/002_admin_uniqueness.sql) e [003_admin_rbac_indexes.sql](database/migrations/003_admin_rbac_indexes.sql) criam a base inicial de Administracao, auditoria, unicidade e performance basica para RBAC.
 
 ## Proximo passo recomendado
 
-Fechar RBAC com `perfil_permissoes`, adicionar autenticacao e depois abrir `filiais`, `aeroportos` e `cargos` como proxima camada administrativa.
+Aplicar middleware de autorizacao com o token emitido no login e depois abrir `filiais`, `aeroportos` e `cargos` como proxima camada administrativa.

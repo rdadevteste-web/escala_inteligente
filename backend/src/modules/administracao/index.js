@@ -4,6 +4,7 @@ import { readJson } from '../../shared/http/read-json.js';
 import { sendJson } from '../../shared/http/response.js';
 import { createAdministracaoService } from './service.js';
 import { createPermissionRepository } from './permission-repository.js';
+import { createProfilePermissionRepository } from './profile-permission-repository.js';
 import { createProfileRepository } from './profile-repository.js';
 import { createUserProfileRepository } from './user-profile-repository.js';
 import { createUserRepository } from './user-repository.js';
@@ -30,10 +31,18 @@ export const createAdministracaoModule = () => {
         profileRepository: createProfileRepository(context.database),
         permissionRepository: createPermissionRepository(context.database),
         userProfileRepository: createUserProfileRepository(context.database),
+        profilePermissionRepository: createProfilePermissionRepository(context.database),
+        env: context.env,
       });
 
       router.add('GET', '/api/v1/administracao', async (_request, response) => {
         sendJson(response, 200, service.getOverview());
+      });
+
+      router.add('POST', '/api/v1/administracao/auth/login', async (request, response) => {
+        const payload = await readJson(request);
+        const session = await service.login(payload);
+        sendJson(response, 200, session);
       });
 
       router.add('GET', '/api/v1/administracao/usuarios', async (_request, response) => {
@@ -102,6 +111,30 @@ export const createAdministracaoModule = () => {
         const profile = await service.deleteProfile(parseId(requestContext.params.id), actorId);
 
         sendJson(response, 200, profile);
+      });
+
+      router.add('GET', '/api/v1/administracao/perfis/:id/permissoes', async (_request, response, requestContext) => {
+        const items = await service.listProfilePermissions(parseId(requestContext.params.id));
+        sendJson(response, 200, { items });
+      });
+
+      router.add('POST', '/api/v1/administracao/perfis/:id/permissoes', async (request, response, requestContext) => {
+        const actorId = getActorIdFromRequest(request);
+        const payload = await readJson(request);
+        const assignment = await service.assignPermissionToProfile(parseId(requestContext.params.id), payload, actorId);
+
+        sendJson(response, 201, assignment);
+      });
+
+      router.add('DELETE', '/api/v1/administracao/perfis/:id/permissoes/:assignmentId', async (request, response, requestContext) => {
+        const actorId = getActorIdFromRequest(request);
+        const assignment = await service.unassignPermissionFromProfile(
+          parseId(requestContext.params.id),
+          parseId(requestContext.params.assignmentId),
+          actorId,
+        );
+
+        sendJson(response, 200, assignment);
       });
 
       router.add('GET', '/api/v1/administracao/permissoes', async (_request, response) => {

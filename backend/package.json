@@ -1,0 +1,12 @@
+{
+  "name": "erp-aeroportuario-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Backend modular inicial do ERP de servicos aeroportuarios.",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "check": "node --check src/server.js"
+  }
+}

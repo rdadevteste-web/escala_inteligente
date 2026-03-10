@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SISTEMA Z - Plataforma Integrada de Gestão</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --gray: #94a3b8;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* Header principal */
+        .main-header {
+            background: linear-gradient(135deg, #1a2639 0%, #0f172a 100%);
+            border-radius: 24px 24px 0 0;
+            padding: 25px 35px;
+            border: 1px solid #2d3a5e;
+            border-bottom: none;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .main-header h1 {
+            font-size: 2.2em;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .main-header h1 span {
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            padding: 5px 20px;
+            border-radius: 40px;
+            font-size: 0.35em;
+            color: white;
+            letter-spacing: 1px;
+        }
+
+        .version-badge {
+            background: #2d3a5e;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.9em;
+            color: #94a3b8;
+        }
+
+        /* Menu de navegação principal */
+        .nav-menu {
+            background: #0f172a;
+            padding: 15px 35px;
+            border: 1px solid #2d3a5e;
+            border-top: none;
+            border-bottom: none;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .nav-item {
+            padding: 12px 24px;
+            border-radius: 12px;
+            color: #94a3b8;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            background: #1a2639;
+            border: 1px solid #2d3a5e;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: #2563eb;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        /* Cards de métricas de risco - Escala Inteligente */
+        .risk-metrics {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 25px;
+            padding: 25px 35px;
+            background: #0f172a;
+            border: 1px solid #2d3a5e;
+            border-top: none;
+        }
+
+        .risk-card {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border-radius: 20px;
+            padding: 20px;
+            border-left: 4px solid;
+            color: white;
+            box-shadow: 0 10px 20px -5px rgba(0,0,0,0.2);
+        }
+
+        .risk-card.trabalhista { border-color: #ef4444; }
+        .risk-card.operacional { border-color: #f59e0b; }
+        .risk-card.financeiro { border-color: #10b981; }
+        .risk-card.conformidade { border-color: #3b82f6; }
+
+        .risk-card .label {
+            color: #94a3b8;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .risk-card .value {
+            font-size: 2em;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .risk-card .sub {
+            color: #94a3b8;
+            font-size: 0.9em;
+        }
+
+        .risk-trend {
+            font-size: 0.9em;
+            color: #4ade80;
+            margin-top: 8px;
+        }
+
+        /* Grid principal com módulos */
+        .modules-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            padding: 0 35px 35px 35px;
+            background: #0f172a;
+            border: 1px solid #2d3a5e;
+            border-top: none;
+            border-radius: 0 0 24px 24px;
+        }
+
+        /* Módulo de Escala Inteligente */
+        .module-card {
+            background: #1a2639;
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid #2d3a5e;
+            margin-bottom: 20px;
+        }
+
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .module-header h3 {
+            color: white;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .module-header .badge {
+            background: #2d3a5e;
+            padding: 5px 12px;
+            border-radius: 30px;
+            color: #94a3b8;
+            font-size: 0.85em;
+        }
+
+        /* Timeline de jornadas */
+        .shift-timeline {
+            margin: 20px 0;
+        }
+
+        .shift-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #0f172a;
+            border-radius: 12px;
+            border-left: 3px solid;
+        }
+
+        .shift-row.compliant { border-color: #10b981; }
+        .shift-row.warning { border-color: #f59e0b; }
+        .shift-row.violation { border-color: #ef4444; }
+
+        .shift-employee {
+            min-width: 150px;
+            color: white;
+            font-weight: 600;
+        }
+
+        .shift-employee small {
+            color: #94a3b8;
+            font-size: 0.8em;
+            display: block;
+        }
+
+        .shift-hours {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #94a3b8;
+        }
+
+        .shift-bar {
+            flex: 1;
+            height: 30px;
+            background: #2d3a5e;
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .shift-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2563eb, #3b82f6);
+            border-radius: 15px;
+            position: relative;
+        }
+
+        .shift-interval {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #f59e0b;
+            z-index: 2;
+        }
+
+        .shift-time {
+            min-width: 100px;
+            text-align: right;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Indicador de interjornada */
+        .interjornada-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9em;
+            padding: 12px;
+            background: #0f172a;
+            border-radius: 12px;
+            margin-top: 10px;
+        }
+
+        .interjornada-bar {
+            flex: 1;
+            height: 8px;
+            background: #2d3a5e;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .interjornada-fill {
+            height: 100%;
+            background: #10b981;
+            border-radius: 4px;
+            width: 0%;
+        }
+
+        .interjornada-marker {
+            position: absolute;
+            width: 2px;
+            height: 12px;
+            background: #ef4444;
+            top: -2px;
+        }
+
+        /* Módulo de Disciplina */
+        .disciplinary-list {
+            margin-top: 15px;
+        }
+
+        .disciplinary-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px;
+            background: #0f172a;
+            border-radius: 12px;
+            margin-bottom: 8px;
+        }
+
+        .disciplinary-status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .disciplinary-status.high { background: #ef4444; }
+        .disciplinary-status.medium { background: #f59e0b; }
+        .disciplinary-status.low { background: #10b981; }
+
+        .disciplinary-info {
+            flex: 1;
+            color: white;
+        }
+
+        .disciplinary-info h4 {
+            font-size: 1em;
+        }
+
+        .disciplinary-info p {
+            color: #94a3b8;
+            font-size: 0.85em;
+        }
+
+        /* Módulo de Portaria */
+        .gate-control {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .gate-card {
+            background: #0f172a;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .gate-number {
+            color: #94a3b8;
+            font-size: 0.9em;
+        }
+
+        .gate-status {
+            color: white;
+            font-size: 1.2em;
+            font-weight: 600;
+            margin: 8px 0;
+        }
+
+        .gate-status.active { color: #10b981; }
+        .gate-status.inactive { color: #ef4444; }
+
+        /* Módulo de Viaturas */
+        .vehicle-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .vehicle-card {
+            background: #0f172a;
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .vehicle-icon {
+            width: 40px;
+            height: 40px;
+            background: #2d3a5e;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .vehicle-info h4 {
+            color: white;
+            font-size: 1em;
+        }
+
+        .vehicle-info p {
+            color: #94a3b8;
+            font-size: 0.8em;
+        }
+
+        /* Módulo de Armamento */
+        .weapon-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .weapon-stat {
+            text-align: center;
+            background: #0f172a;
+            padding: 15px;
+            border-radius: 12px;
+        }
+
+        .weapon-number {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: white;
+        }
+
+        .weapon-label {
+            color: #94a3b8;
+            font-size: 0.85em;
+        }
+
+        /* Gráficos e indicadores */
+        .chart-container {
+            background: #0f172a;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .chart-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .chart-label {
+            min-width: 100px;
+            color: #94a3b8;
+        }
+
+        .chart-progress {
+            flex: 1;
+            height: 30px;
+            background: #2d3a5e;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .chart-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2563eb, #3b82f6);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            color: white;
+            font-size: 0.85em;
+        }
+
+        /* Alertas e notificações */
+        .alert-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #0f172a;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            border-left: 3px solid;
+        }
+
+        .alert-item.critical { border-color: #ef4444; }
+        .alert-item.warning { border-color: #f59e0b; }
+        .alert-item.info { border-color: #3b82f6; }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-content h4 {
+            color: white;
+            font-size: 0.95em;
+        }
+
+        .alert-content p {
+            color: #94a3b8;
+            font-size: 0.85em;
+        }
+
+        .alert-time {
+            color: #64748b;
+            font-size: 0.8em;
+        }
+
+        /* Responsividade */
+        @media (max-width: 1200px) {
+            .modules-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="main-header">
+            <h1>
+                🚀 SISTEMA Z
+                <span>v2.0 - Reengenharia Completa</span>
+            </h1>
+            <div class="version-badge">
+                <span>⚡ API RESTful | Arquitetura Modular | Tempo Real</span>
+            </div>
+        </div>
+
+        <!-- Menu de Navegação -->
+        <div class="nav-menu">
+            <div class="nav-item active">📊 Dashboard</div>
+            <div class="nav-item">👥 Escala Inteligente</div>
+            <div class="nav-item">⚖️ Disciplina</div>
+            <div class="nav-item">🚪 Portaria</div>
+            <div class="nav-item">🚓 Viaturas</div>
+            <div class="nav-item">🔫 Armamento</div>
+            <div class="nav-item">📈 Gerencial</div>
+            <div class="nav-item">🏃 Largada</div>
+            <div class="nav-item">⚙️ Configurações</div>
+        </div>
+
+        <!-- Cards de Risco - Escala Inteligente -->
+        <div class="risk-metrics">
+            <div class="risk-card trabalhista">
+                <div class="label">Risco Trabalhista (Interjornada)</div>
+                <div class="value">R$ 113k <span class="sub">média/ano</span></div>
+                <div class="sub">2020-2025: R$ 609k liquidados</div>
+                <div class="risk-trend">↓ 76% com novo sistema</div>
+            </div>
+            <div class="risk-card operacional">
+                <div class="label">Postos Descobertos</div>
+                <div class="value">12 <span class="sub">hoje</span></div>
+                <div class="sub">meta: ≤ 3</div>
+                <div class="risk-trend">⚠️ 8 acima da meta</div>
+            </div>
+            <div class="risk-card financeiro">
+                <div class="label">Horas Extras (mês)</div>
+                <div class="value">1.245h</div>
+                <div class="sub">R$ 87.150 estimado</div>
+                <div class="risk-trend">↓ 15% vs mês anterior</div>
+            </div>
+            <div class="risk-card conformidade">
+                <div class="label">Conformidade CLT</div>
+                <div class="value">94%</div>
+                <div class="sub">art. 66 - 11h intervalo</div>
+                <div class="risk-trend">meta: 98%</div>
+            </div>
+        </div>
+
+        <!-- Alerta de Violações -->
+        <div class="alerts-bar" style="margin: 0 35px 25px 35px; background: #1a2639;">
+            <div class="alert-icon">⚠️</div>
+            <div class="alert-text">
+                <strong>3 violações de interjornada detectadas nas últimas 24h</strong> - Colaboradores: João Oliveira (4h), Maria Silva (6h), Carlos Santos (8h)
+            </div>
+            <div class="alert-count">Ações necessárias: 3</div>
+        </div>
+
+        <!-- Grid Principal com Módulos -->
+        <div class="modules-grid">
+            <!-- Coluna Esquerda - Escala Inteligente e Módulos Operacionais -->
+            <div class="left-column">
+                <!-- Módulo: Escala Inteligente -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <h3>
+                            <span>👥</span>
+                            Escala Inteligente - Jornadas em Tempo Real
+                        </h3>
+                        <div class="badge">Atualizado há 5s</div>
+                    </div>
+
+                    <!-- Timeline de Jornadas -->
+                    <div class="shift-timeline">
+                        <div class="shift-row compliant">
+                            <div class="shift-employee">
+                                Ana Silva
+                                <small>Check-in · 6h</small>
+                            </div>
+                            <div class="shift-hours">
+                                <span>05:00</span>
+                                <div class="shift-bar">
+                                    <div class="shift-fill" style="width: 75%;"></div>
+                                </div>
+                                <span>13:00</span>
+                            </div>
+                            <div class="shift-time">+1h30 intervalo</div>
+                        </div>
+
+                        <div class="shift-row warning">
+                            <div class="shift-employee">
+                                Carlos Santos
+                                <small>Embarque · 8h</small>
+                            </div>
+                            <div class="shift-hours">
+                                <span>08:00</span>
+                                <div class="shift-bar">
+                                    <div class="shift-fill" style="width: 50%;">
+                                        <div class="shift-interval" style="left: 60%;"></div>
+                                    </div>
+                                </div>
+                                <span>18:00</span>
+                            </div>
+                            <div class="shift-time">Intervalo atrasado</div>
+                        </div>
+
+                        <div class="shift-row violation">
+                            <div class="shift-employee">
+                                João Oliveira
+                                <small>Check-in · 8h</small>
+                            </div>
+                            <div class="shift-hours">
+                                <span>14:00</span>
+                                <div class="shift-bar">
+                                    <div class="shift-fill" style="width: 25%;">
+                                        <div class="shift-interval" style="left: 30%;"></div>
+                                    </div>
+                                </div>
+                                <span>22:00</span>
+                            </div>
+                            <div class="shift-time">⚠️ Interjornada: 9h</div>
+                        </div>
+                    </div>
+
+                    <!-- Indicador de Interjornada -->
+                    <div class="interjornada-indicator">
+                        <span style="color: white;">Próximas 11h:</span>
+                        <div class="interjornada-bar">
+                            <div class="interjornada-fill" style="width: 82%;"></div>
+                            <div class="interjornada-marker" style="left: 75%;"></div>
+                            <div class="interjornada-marker" style="left: 90%;"></div>
+                        </div>
+                        <span style="color: #94a3b8;">2 violações previstas</span>
+                    </div>
+                </div>
+
+                <!-- Módulo: Disciplina -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <h3>
+                            <span>⚖️</span>
+                            Módulo Disciplina
+                        </h3>
+                        <div class="badge">5 ocorrências abertas</div>
+                    </div>
+
+                    <div class="disciplinary-list">
+                        <div class="disciplinary-item">
+                            <div class="disciplinary-status high"></div>
+                            <div class="disciplinary-info">
+                                <h4>Falta injustificada - João Mendes</h4>
+                                <p>Check-in A · 3ª ocorrência no mês</p>
+                            </div>
+                            <span class="alert-time">Há 2h</span>
+                        </div>
+                        <div class="disciplinary-item">
+                            <div class="disciplinary-status medium"></div>
+                            <div class="disciplinary-info">
+                                <h4>Atraso recorrente - Maria Silva</h4>
+                                <p>Embarque · 15min atraso hoje</p>
+                            </div>
+                            <span class="alert-time">Há 30min</span>
+                        </div>
+                        <div class="disciplinary-item">
+                            <div class="disciplinary-status low"></div>
+                            <div class="disciplinary-info">
+                                <h4>Advertência - Pedro Costa</h4>
+                                <p>Procedimento de segurança</p>
+                            </div>
+                            <span class="alert-time">Há 1 dia</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Módulo: Viaturas e Armamento -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <h3>
+                            <span>🚓</span>
+                            Viaturas e Armamento
+                        </h3>
+                        <div class="badge">Integração em tempo real</div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <!-- Viaturas -->
+                        <div>
+                            <h4 style="color: white; margin-bottom: 15px;">Viaturas Operacionais</h4>
+                            <div class="vehicle-grid">
+                                <div class="vehicle-card">
+                                    <div class="vehicle-icon">🚓</div>
+                                    <div class="vehicle-info">
+                                        <h4>VTR-01</h4>
+                                        <p>Ronda ativa · Terminal 3</p>
+                                    </div>
+                                </div>
+                                <div class="vehicle-card">
+                                    <div class="vehicle-icon">🚔</div>
+                                    <div class="vehicle-info">
+                                        <h4>VTR-02</h4>
+                                        <p>Disponível · Base</p>
+                                    </div>
+                                </div>
+                                <div class="vehicle-card">
+                                    <div class="vehicle-icon">🚨</div>
+                                    <div class="vehicle-info">
+                                        <h4>VTR-03</h4>
+                                        <p>Manutenção</p>
+                                    </div>
+                                </div>
+                                <div class="vehicle-card">
+                                    <div class="vehicle-icon">🚙</div>
+                                    <div class="vehicle-info">
+                                        <h4>VTR-04</h4>
+                                        <p>Ronda ativa · Pista</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Armamento -->
+                        <div>
+                            <h4 style="color: white; margin-bottom: 15px;">Controle de Armamento</h4>
+                            <div class="weapon-stats">
+                                <div class="weapon-stat">
+                                    <div class="weapon-number">45</div>
+                                    <div class="weapon-label">Armas em uso</div>
+                                </div>
+                                <div class="weapon-stat">
+                                    <div class="weapon-number">12</div>
+                                    <div class="weapon-label">Disponíveis</div>
+                                </div>
+                                <div class="weapon-stat">
+                                    <div class="weapon-number">3</div>
+                                    <div class="weapon-label">Em manutenção</div>
+                                </div>
+                                <div class="weapon-stat">
+                                    <div class="weapon-number">98%</div>
+                                    <div class="weapon-label">Rastreabilidade</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Coluna Direita - Painéis Gerenciais -->
+            <div class="right-column">
+                <!-- Módulo: Portaria -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <h3>
+                            <span>🚪</span>
+                            Controle de Portaria
+                        </h3>
+                        <div class="badge">24 acessos/hora</div>
+                    </div>
+
+                    <div class="gate-control">
+                        <div class="gate-card">
+                            <div class="gate-number">Portão Principal</div>
+                            <div class="gate-status active">🟢 Liberado</div>
+                            <div style="color: #94a3b8;">156 acessos hoje</div>
+                        </div>
+                        <div class="gate-card">
+                            <div class="gate-number">Portão Carga</div>
+                            <div class="gate-status active">🟢 Liberado</div>
+                            <div style="color: #94a3b8;">89 acessos hoje</div>
+                        </div>
+                        <div class="gate-card">
+                            <div class="gate-number">Portão Funcionários</div>
+                            <div class="gate-status active">🟢 Liberado</div>
+                            <div style="color: #94a3b8;">234 acessos hoje</div>
+                        </div>
+                        <div class="gate-card">
+                            <div class="gate-number">Portão VIP</div>
+                            <div class="gate-status inactive">🔴 Bloqueado</div>
+                            <div style="color: #94a3b8;">manutenção</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Módulo: Gerencial - Indicadores -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <h3>
+                            <span>📈</span>
+                            Indicadores Gerenciais
+                        </h3>
+                        <div class="badge">atualizado</div>
+                    </div>
+
+                    <div class="chart-container">
+                        <div class="chart-bar">
+                            <span class="chart-label">Check-in</span>
+                            <div class="chart-progress">
+                                <div class="chart-fill" style="width: 85%;">85%</div>
+                            </div>
+                        </div>
+                        <div class="chart-bar">
+                            <span class="chart-label">Embarque</span>
+                            <div class="chart-progress">
+                                <div class="chart-fill" style="width: 92%;">92%</div>
+                            </div>
+                        </div>
+                        <div class="chart-bar">
+                            <span class="chart-label">Desembarque</span>
+                            <div class="chart-progress">
+                                <div class="chart-fill" style="width: 78%;">78%</div>
+                            </div>
+                        </div>
+                        <div class="chart-bar">
+                            <span class="chart-label">Pista</span>
+                            <div class="chart-progress">
+                                <div class="chart-fill" style="width: 88%;">88%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div style="background: #0f172a; padding: 15px; border-radius: 12px;">
+                            <div style="color: #94a3b8;">Horas acumuladas</div>
+                            <div style="color: white; font-size: 1.8em; font-weight: 700;">4.567h</div>
+                            <div style="color: #4ade80;">↑ 12% vs ontem</div>
+                        </div>
+                        <div style="background: #0f172a; padding: 15px; border-radius: 12px;">
+                            <div style="color: #94a3b8;">Eficiência</div>
+                            <div style="color: white; font-size: 1.8em; font-weight: 700;">94%</div>
+                            <div style="color: #4ade80;">meta: 92%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Módulo: Alertas e Notificações -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <h3>
+                            <span>🔔</span>
+                            Alertas do Sistema
+                        </h3>
+                        <div class="badge">12 notificações</div>
+                    </div>
+
+                    <div class="alert-item critical">
+                        <div class="alert-content">
+                            <h4>⚠️ Violação de interjornada</h4>
+                            <p>João Oliveira - Trabalhou apenas 9h de intervalo</p>
+                        </div>
+                        <div class="alert-time">agora</div>
+                    </div>
+
+                    <div class="alert-item warning">
+                        <div class="alert-content">
+                            <h4>⚠️ Posto descoberto</h4>
+                            <p>Check-in 12 - sem colaborador alocado</p>
+                        </div>
+                        <div class="alert-time">há 15min</div>
+                    </div>
+
+                    <div class="alert-item info">
+                        <div class="alert-content">
+                            <h4>ℹ️ Substituição automática</h4>
+                            <p>Maria Lima alocada no lugar de Carlos</p>
+                        </div>
+                        <div class="alert-time">há 1h</div>
+                    </div>
+
+                    <div class="alert-item info">
+                        <div class="alert-content">
+                            <h4>✅ Integração API</h4>
+                            <p>Dados sincronizados com ClockIn</p>
+                        </div>
+                        <div class="alert-time">há 2h</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simulação de dados em tempo real
+        setInterval(() => {
+            // Atualizar métricas aleatoriamente para demonstrar tempo real
+            const riskValues = document.querySelectorAll('.value');
+            riskValues.forEach(value => {
+                if (value.innerText.includes('R$')) {
+                    // Não atualiza valores financeiros
+                    return;
+                }
+            });
+
+            // Adicionar/remover alertas dinâmicos
+            const alertsContainer = document.querySelector('.alert-item.critical');
+            if (alertsContainer && Math.random() > 0.7) {
+                alertsContainer.style.opacity = '0.8';
+                setTimeout(() => alertsContainer.style.opacity = '1', 200);
+            }
+
+            // Simular atualização do badge
+            const badges = document.querySelectorAll('.badge');
+            badges.forEach(badge => {
+                if (badge.innerText.includes('atualizado')) {
+                    badge.innerText = 'atualizado agora';
+                    setTimeout(() => badge.innerText = 'atualizado há 5s', 5000);
+                }
+            });
+        }, 10000);
+
+        // Navegação entre módulos
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Aqui seria carregado o módulo correspondente via API
+                alert(`Carregando módulo: ${this.innerText}\n(Integração via API RESTful)`);
+            });
+        });
+
+        // Interatividade nos cards de risco
+        document.querySelectorAll('.risk-card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.style.transform = 'scale(1.02)';
+                setTimeout(() => this.style.transform = '', 200);
+                
+                const risco = this.querySelector('.label').innerText;
+                alert(`Detalhes: ${risco}\nExportando relatório via API...`);
+            });
+        });
+
+        // Simular atualização em tempo real da timeline
+        function updateTimeline() {
+            const timeElement = document.querySelector('.badge');
+            if (timeElement && timeElement.innerText.includes('atualizado')) {
+                timeElement.innerText = 'atualizado há 5s';
+            }
+        }
+
+        setInterval(updateTimeline, 5000);
+    </script>
+</body>
+</html>

@@ -2,10 +2,10 @@ import { createRouter } from './shared/http/router.js';
 import { sendJson } from './shared/http/response.js';
 import { createModuleRegistry } from './shared/modules/module-registry.js';
 
-export const createApp = ({ env, logger }) => {
+export const createApp = ({ env, logger, database }) => {
   const router = createRouter();
   const modules = createModuleRegistry();
-  const context = { env, logger, modules };
+  const context = { env, logger, modules, database };
 
   router.add('GET', '/', async (_request, response) => {
     sendJson(response, 200, {

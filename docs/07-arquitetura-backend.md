@@ -17,6 +17,7 @@ backend/
     server.js
     shared/
       config/
+      database/
       errors/
       http/
       logger/
@@ -32,7 +33,7 @@ backend/
 ## Regras de modularidade
 
 * Cada modulo expoe apenas um `index.js` para registrar rotas.
-* Servicos ficam dentro do proprio modulo.
+* Servicos e repositorios ficam dentro do proprio modulo.
 * Quando um modulo precisar de dados de outro, a comunicacao deve acontecer por contratos explicitos, nunca por importacao transversal de detalhes internos.
 * Infraestrutura tecnica comum nao pode conter regra de negocio de dominio.
 
@@ -42,10 +43,21 @@ backend/
 * A funcao `audit_row_changes()` registra `insert`, `update` e `delete` em `auditoria_logs`.
 * A funcao `set_row_timestamps()` padroniza `created_at` e `updated_at`.
 * `sistema_logs` fica reservado para falhas tecnicas, integracoes e eventos de runtime.
+* O backend passa o usuario operador para o banco pelo header `x-user-id`, permitindo preencher o contexto `app.current_user_id` para as triggers de auditoria.
+
+## CRUD inicial implementado
+
+O modulo `administracao` ja possui CRUD inicial de `usuarios`:
+
+* `GET /api/v1/administracao/usuarios`
+* `GET /api/v1/administracao/usuarios/:id`
+* `POST /api/v1/administracao/usuarios`
+* `PUT /api/v1/administracao/usuarios/:id`
+* `DELETE /api/v1/administracao/usuarios/:id`
 
 ## Proximo incremento sugerido
 
-1. Adicionar camada de persistencia PostgreSQL no backend.
-2. Implementar CRUD completo do modulo de Administracao.
+1. Aplicar a migration em um PostgreSQL real.
+2. Implementar persistencia de perfis, permissoes e filiais.
 3. Criar segunda migration com Comercial, RH e Operacional.
-4. Adicionar autenticacao e propagacao de `app.current_user_id` para auditoria automatica.
+4. Adicionar autenticacao e hash real de senha.

@@ -39,13 +39,14 @@ frontend/
 
 ## Backend inicial
 
-A primeira base do backend foi criada em Node.js ESM, com modulos isolados para `administracao`, `comercial`, `operacional`, `rh` e `auditoria`.
+A base do backend foi criada em Node.js ESM, com modulos isolados para `administracao`, `comercial`, `operacional`, `rh` e `auditoria`, e conexao preparada para PostgreSQL via `pg`.
 
 ### Executar localmente
 
 ```powershell
 cd backend
 Copy-Item .env.example .env
+npm.cmd install
 node src/server.js
 ```
 
@@ -55,10 +56,16 @@ Rotas iniciais:
 * `GET /health`
 * `GET /api/v1/administracao`
 * `GET /api/v1/administracao/usuarios`
+* `GET /api/v1/administracao/usuarios/:id`
+* `POST /api/v1/administracao/usuarios`
+* `PUT /api/v1/administracao/usuarios/:id`
+* `DELETE /api/v1/administracao/usuarios/:id`
 * `GET /api/v1/comercial`
 * `GET /api/v1/operacional`
 * `GET /api/v1/rh`
 * `GET /api/v1/auditoria`
+
+Para propagar o usuario responsavel para auditoria automatica no banco, envie o header `x-user-id` nas operacoes de escrita.
 
 ## Banco de dados
 
@@ -66,4 +73,4 @@ A migration [001_initial_foundation.sql](database/migrations/001_initial_foundat
 
 ## Proximo passo recomendado
 
-Conectar o backend ao PostgreSQL e evoluir o modulo de Administracao para CRUD completo, mantendo o mesmo padrao para os demais modulos.
+Aplicar a migration no PostgreSQL e evoluir Administracao com perfis, permissoes e autenticacao antes de abrir os proximos modulos de negocio.

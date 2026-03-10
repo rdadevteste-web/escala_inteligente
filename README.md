@@ -29,6 +29,9 @@ database/
   diagramas/
     mvp-dicionario-dados.csv
 frontend/
+  index.html
+  app.css
+  app.js
 ```
 
 ## Documentos
@@ -57,28 +60,26 @@ npm.cmd run seed:admin
 node src/server.js
 ```
 
-### Bootstrap de acesso
+### Teste via frontend
 
-O seed administrativo cria ou atualiza:
+Com o backend rodando, abra [http://localhost:3000/app](http://localhost:3000/app).
 
-* usuario administrador
-* perfil `Administrador`
-* permissoes administrativas padrao
-* vinculos de `usuario_perfis`
-* vinculos de `perfil_permissoes`
+Essa interface minima permite:
+
+* fazer login com o usuario bootstrap
+* visualizar o token emitido
+* consultar `usuarios`, `perfis`, `permissoes`, `aeroportos`, `filiais` e `cargos`
 
 Credenciais padrao do bootstrap:
 
 * login: `admin`
 * senha: `Admin@123`
 
-Esses valores podem ser sobrescritos com `ADMIN_SEED_NAME`, `ADMIN_SEED_EMAIL`, `ADMIN_SEED_LOGIN`, `ADMIN_SEED_PASSWORD` e `ADMIN_SEED_PROFILE`.
-
 ### Fluxo minimo de acesso
 
 1. Aplicar migrations no PostgreSQL.
 2. Rodar `npm.cmd run seed:admin` em `backend/`.
-3. Fazer login em `POST /api/v1/administracao/auth/login`.
+3. Fazer login em `POST /api/v1/administracao/auth/login` ou via `/app`.
 4. Enviar `Authorization: Bearer <token>` nas rotas protegidas.
 
 ## Banco de dados
@@ -87,4 +88,4 @@ As migrations [001_initial_foundation.sql](database/migrations/001_initial_found
 
 ## Proximo passo recomendado
 
-Abrir `funcoes_operacionais`, `tipos_jornada` e `escalas_modelo`, e em seguida iniciar o modulo Comercial no mesmo padrao.
+Abrir `funcoes_operacionais`, `tipos_jornada` e `escalas_modelo`, e em seguida iniciar o modulo Comercial.

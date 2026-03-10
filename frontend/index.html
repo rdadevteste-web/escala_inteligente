@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ERP Aeroportuario - Teste</title>
+    <link rel="stylesheet" href="/app.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="hero">
+        <p class="eyebrow">ERP Aeroportuario</p>
+        <h1>Painel de Teste</h1>
+        <p class="subtitle">Interface minima para validar login, token e rotas administrativas.</p>
+      </section>
+
+      <section class="card login-card">
+        <h2>Login</h2>
+        <form id="login-form" class="grid">
+          <label>
+            <span>Login</span>
+            <input id="login" name="login" value="admin" required />
+          </label>
+          <label>
+            <span>Senha</span>
+            <input id="senha" name="senha" type="password" value="Admin@123" required />
+          </label>
+          <button type="submit">Entrar</button>
+        </form>
+        <div class="token-box">
+          <strong>Token</strong>
+          <textarea id="token" rows="4" readonly></textarea>
+        </div>
+        <pre id="session-output" class="output"></pre>
+      </section>
+
+      <section class="card actions-card">
+        <div class="actions-header">
+          <h2>Consultas Rapidas</h2>
+          <button id="clear-output" class="ghost">Limpar saida</button>
+        </div>
+        <div class="actions-grid">
+          <button data-endpoint="/api/v1/administracao/usuarios">Usuarios</button>
+          <button data-endpoint="/api/v1/administracao/perfis">Perfis</button>
+          <button data-endpoint="/api/v1/administracao/permissoes">Permissoes</button>
+          <button data-endpoint="/api/v1/administracao/aeroportos">Aeroportos</button>
+          <button data-endpoint="/api/v1/administracao/filiais">Filiais</button>
+          <button data-endpoint="/api/v1/administracao/cargos">Cargos</button>
+        </div>
+        <pre id="api-output" class="output large"></pre>
+      </section>
+
+      <section class="card helper-card">
+        <h2>Como usar</h2>
+        <ol>
+          <li>Rode o backend e o seed de admin.</li>
+          <li>Faça login com as credenciais bootstrap.</li>
+          <li>Use os botoes para testar as rotas protegidas.</li>
+        </ol>
+      </section>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,235 @@
+modulo,tabela,campo,tipo,obrigatorio,pk,fk_tabela,fk_campo,descricao
+Administracao,usuarios,id,bigint,sim,sim,,,Identificador do usuario
+Administracao,usuarios,nome,varchar(150),sim,nao,,,Nome completo
+Administracao,usuarios,email,varchar(150),sim,nao,,,Email do usuario
+Administracao,usuarios,login,varchar(80),sim,nao,,,Login unico
+Administracao,usuarios,senha_hash,varchar(255),sim,nao,,,Hash da senha
+Administracao,usuarios,ultimo_acesso_em,timestamp,nao,nao,,,Data do ultimo acesso
+Administracao,perfis_acesso,id,bigint,sim,sim,,,Identificador do perfil
+Administracao,perfis_acesso,nome,varchar(100),sim,nao,,,Nome do perfil
+Administracao,perfis_acesso,descricao,text,nao,nao,,,Descricao do perfil
+Administracao,permissoes,id,bigint,sim,sim,,,Identificador da permissao
+Administracao,permissoes,modulo,varchar(80),sim,nao,,,Modulo funcional
+Administracao,permissoes,acao,varchar(80),sim,nao,,,Acao permitida
+Administracao,permissoes,descricao,text,nao,nao,,,Descricao da permissao
+Administracao,usuario_perfis,id,bigint,sim,sim,,,Identificador do vinculo
+Administracao,usuario_perfis,usuario_id,bigint,sim,nao,usuarios,id,Usuario vinculado
+Administracao,usuario_perfis,perfil_id,bigint,sim,nao,perfis_acesso,id,Perfil vinculado
+Administracao,usuario_perfis,filial_id,bigint,nao,nao,filiais,id,Filial de contexto do perfil
+Administracao,perfil_permissoes,id,bigint,sim,sim,,,Identificador do vinculo
+Administracao,perfil_permissoes,perfil_id,bigint,sim,nao,perfis_acesso,id,Perfil vinculado
+Administracao,perfil_permissoes,permissao_id,bigint,sim,nao,permissoes,id,Permissao vinculada
+Administracao,filiais,id,bigint,sim,sim,,,Identificador da filial
+Administracao,filiais,empresa_id,bigint,sim,nao,empresas,id,Empresa proprietaria
+Administracao,filiais,nome,varchar(150),sim,nao,,,Nome da filial
+Administracao,filiais,sigla,varchar(20),nao,nao,,,Sigla da filial
+Administracao,filiais,cnpj,varchar(18),nao,nao,,,CNPJ da filial
+Administracao,filiais,aeroporto_id,bigint,nao,nao,aeroportos,id,Aeroporto principal
+Administracao,aeroportos,id,bigint,sim,sim,,,Identificador do aeroporto
+Administracao,aeroportos,nome,varchar(150),sim,nao,,,Nome do aeroporto
+Administracao,aeroportos,codigo_iata,varchar(3),nao,nao,,,Codigo IATA
+Administracao,aeroportos,codigo_icao,varchar(4),nao,nao,,,Codigo ICAO
+Administracao,aeroportos,cidade,varchar(100),sim,nao,,,Cidade
+Administracao,aeroportos,estado,varchar(50),sim,nao,,,Estado
+Administracao,aeroportos,pais,varchar(50),sim,nao,,,Pais
+Administracao,cargos,id,bigint,sim,sim,,,Identificador do cargo
+Administracao,cargos,nome,varchar(120),sim,nao,,,Nome do cargo
+Administracao,cargos,descricao,text,nao,nao,,,Descricao do cargo
+Administracao,cargos,nivel,varchar(50),nao,nao,,,Nivel do cargo
+Administracao,funcoes_operacionais,id,bigint,sim,sim,,,Identificador da funcao operacional
+Administracao,funcoes_operacionais,nome,varchar(120),sim,nao,,,Nome da funcao
+Administracao,funcoes_operacionais,descricao,text,nao,nao,,,Descricao da funcao
+Administracao,funcoes_operacionais,requer_treinamento,boolean,sim,nao,,,Indica se exige treinamento
+Administracao,tipos_jornada,id,bigint,sim,sim,,,Identificador do tipo de jornada
+Administracao,tipos_jornada,nome,varchar(120),sim,nao,,,Nome do tipo de jornada
+Administracao,tipos_jornada,carga_horaria_semanal,decimal(5,2),sim,nao,,,Carga horaria semanal
+Administracao,tipos_jornada,horas_dia_padrao,decimal(4,2),sim,nao,,,Horas por dia
+Administracao,tipos_jornada,escala_base,varchar(50),nao,nao,,,Escala base
+Administracao,escalas_modelo,id,bigint,sim,sim,,,Identificador da escala modelo
+Administracao,escalas_modelo,tipo_jornada_id,bigint,sim,nao,tipos_jornada,id,Tipo de jornada associado
+Administracao,escalas_modelo,nome,varchar(120),sim,nao,,,Nome da escala modelo
+Administracao,escalas_modelo,quantidade_dias_trabalho,int,sim,nao,,,Dias de trabalho no ciclo
+Administracao,escalas_modelo,quantidade_dias_folga,int,sim,nao,,,Dias de folga no ciclo
+Comercial,clientes,id,bigint,sim,sim,,,Identificador do cliente
+Comercial,clientes,tipo_pessoa,varchar(20),sim,nao,,,PF ou PJ
+Comercial,clientes,razao_social,varchar(180),sim,nao,,,Razao social
+Comercial,clientes,nome_fantasia,varchar(180),nao,nao,,,Nome fantasia
+Comercial,clientes,cnpj,varchar(18),nao,nao,,,Documento principal
+Comercial,clientes,telefone,varchar(30),nao,nao,,,Telefone principal
+Comercial,clientes,email,varchar(150),nao,nao,,,Email principal
+Comercial,clientes,endereco,text,nao,nao,,,Endereco principal
+Comercial,clientes,observacoes,text,nao,nao,,,Observacoes gerais
+Comercial,clientes_contatos,id,bigint,sim,sim,,,Identificador do contato
+Comercial,clientes_contatos,cliente_id,bigint,sim,nao,clientes,id,Cliente relacionado
+Comercial,clientes_contatos,nome,varchar(150),sim,nao,,,Nome do contato
+Comercial,clientes_contatos,cargo,varchar(100),nao,nao,,,Cargo do contato
+Comercial,clientes_contatos,telefone,varchar(30),nao,nao,,,Telefone
+Comercial,clientes_contatos,email,varchar(150),nao,nao,,,Email
+Comercial,clientes_contatos,whatsapp,varchar(30),nao,nao,,,WhatsApp
+Comercial,clientes_contatos,principal,boolean,sim,nao,,,Indica contato principal
+Comercial,servicos,id,bigint,sim,sim,,,Identificador do servico
+Comercial,servicos,codigo,varchar(50),sim,nao,,,Codigo interno
+Comercial,servicos,nome,varchar(150),sim,nao,,,Nome do servico
+Comercial,servicos,descricao,text,nao,nao,,,Descricao do servico
+Comercial,servicos,unidade_medida,varchar(30),sim,nao,,,Unidade de medida
+Comercial,servicos,tempo_padrao_minutos,int,nao,nao,,,Tempo padrao em minutos
+Comercial,servicos,exige_funcao_especifica,boolean,sim,nao,,,Indica exigencia operacional
+Comercial,contratos,id,bigint,sim,sim,,,Identificador do contrato
+Comercial,contratos,cliente_id,bigint,sim,nao,clientes,id,Cliente do contrato
+Comercial,contratos,filial_id,bigint,sim,nao,filiais,id,Filial responsavel
+Comercial,contratos,numero_contrato,varchar(50),sim,nao,,,Numero do contrato
+Comercial,contratos,nome_contrato,varchar(150),sim,nao,,,Nome do contrato
+Comercial,contratos,objeto,text,nao,nao,,,Objeto contratual
+Comercial,contratos,data_inicio,date,sim,nao,,,Inicio da vigencia
+Comercial,contratos,data_fim,date,nao,nao,,,Fim da vigencia
+Comercial,contratos,renovacao_automatica,boolean,sim,nao,,,Indica renovacao automatica
+Comercial,contratos,observacoes,text,nao,nao,,,Observacoes gerais
+Comercial,contrato_servicos,id,bigint,sim,sim,,,Identificador do item de contrato
+Comercial,contrato_servicos,contrato_id,bigint,sim,nao,contratos,id,Contrato relacionado
+Comercial,contrato_servicos,servico_id,bigint,sim,nao,servicos,id,Servico contratado
+Comercial,contrato_servicos,quantidade_prevista,decimal(10,2),nao,nao,,,Quantidade prevista
+Comercial,contrato_servicos,unidade_medida,varchar(30),nao,nao,,,Unidade negociada
+Comercial,contrato_servicos,tempo_padrao_minutos,int,nao,nao,,,Tempo padrao previsto
+Comercial,contrato_precos,id,bigint,sim,sim,,,Identificador do preco
+Comercial,contrato_precos,contrato_id,bigint,sim,nao,contratos,id,Contrato relacionado
+Comercial,contrato_precos,servico_id,bigint,sim,nao,servicos,id,Servico precificado
+Comercial,contrato_precos,vigencia_inicio,date,sim,nao,,,Inicio da vigencia
+Comercial,contrato_precos,vigencia_fim,date,nao,nao,,,Fim da vigencia
+Comercial,contrato_precos,valor_unitario,decimal(14,2),sim,nao,,,Valor unitario
+Comercial,contrato_precos,adicional_noturno,decimal(14,2),nao,nao,,,Adicional noturno
+Comercial,contrato_precos,adicional_feriado,decimal(14,2),nao,nao,,,Adicional de feriado
+Comercial,atendimentos_emergenciais,id,bigint,sim,sim,,,Identificador do atendimento emergencial
+Comercial,atendimentos_emergenciais,cliente_id,bigint,sim,nao,clientes,id,Cliente solicitante
+Comercial,atendimentos_emergenciais,contrato_id,bigint,nao,nao,contratos,id,Contrato vinculado
+Comercial,atendimentos_emergenciais,aeroporto_id,bigint,sim,nao,aeroportos,id,Aeroporto da solicitacao
+Comercial,atendimentos_emergenciais,data_solicitacao,timestamp,sim,nao,,,Momento da solicitacao
+Comercial,atendimentos_emergenciais,data_prevista,timestamp,nao,nao,,,Momento previsto
+Comercial,atendimentos_emergenciais,tipo_atendimento,varchar(50),sim,nao,,,Tipo da demanda
+Comercial,atendimentos_emergenciais,descricao,text,sim,nao,,,Descricao da solicitacao
+Comercial,atendimentos_emergenciais,prioridade,varchar(30),sim,nao,,,Prioridade operacional
+Operacional,postos_trabalho,id,bigint,sim,sim,,,Identificador do posto
+Operacional,postos_trabalho,filial_id,bigint,sim,nao,filiais,id,Filial responsavel
+Operacional,postos_trabalho,aeroporto_id,bigint,sim,nao,aeroportos,id,Aeroporto do posto
+Operacional,postos_trabalho,nome,varchar(120),sim,nao,,,Nome do posto
+Operacional,postos_trabalho,tipo_posto,varchar(50),nao,nao,,,Tipo do posto
+Operacional,postos_trabalho,capacidade_pessoas,int,nao,nao,,,Capacidade simultanea
+Operacional,turnos,id,bigint,sim,sim,,,Identificador do turno
+Operacional,turnos,nome,varchar(100),sim,nao,,,Nome do turno
+Operacional,turnos,hora_inicio,time,sim,nao,,,Hora inicial
+Operacional,turnos,hora_fim,time,sim,nao,,,Hora final
+Operacional,turnos,tolerancia_atraso_min,int,nao,nao,,,Tolerancia em minutos
+Operacional,atendimentos,id,bigint,sim,sim,,,Identificador do atendimento
+Operacional,atendimentos,cliente_id,bigint,sim,nao,clientes,id,Cliente relacionado
+Operacional,atendimentos,contrato_id,bigint,nao,nao,contratos,id,Contrato associado
+Operacional,atendimentos,servico_id,bigint,sim,nao,servicos,id,Servico executado
+Operacional,atendimentos,aeroporto_id,bigint,sim,nao,aeroportos,id,Aeroporto do atendimento
+Operacional,atendimentos,filial_id,bigint,sim,nao,filiais,id,Filial executora
+Operacional,atendimentos,data_atendimento,date,sim,nao,,,Data do atendimento
+Operacional,atendimentos,hora_inicio_prevista,timestamp,nao,nao,,,Horario previsto de inicio
+Operacional,atendimentos,hora_fim_prevista,timestamp,nao,nao,,,Horario previsto de fim
+Operacional,atendimentos,hora_inicio_real,timestamp,nao,nao,,,Horario real de inicio
+Operacional,atendimentos,hora_fim_real,timestamp,nao,nao,,,Horario real de fim
+Operacional,atendimentos,posto_trabalho_id,bigint,nao,nao,postos_trabalho,id,Posto vinculado
+Operacional,atendimentos,quantidade_prevista,decimal(10,2),nao,nao,,,Quantidade prevista
+Operacional,atendimentos,quantidade_realizada,decimal(10,2),nao,nao,,,Quantidade realizada
+Operacional,atendimentos,origem,varchar(30),sim,nao,,,Planejado ou emergencial
+Operacional,alocacoes,id,bigint,sim,sim,,,Identificador da alocacao
+Operacional,alocacoes,data,date,sim,nao,,,Data da alocacao
+Operacional,alocacoes,turno_id,bigint,sim,nao,turnos,id,Turno atribuido
+Operacional,alocacoes,posto_trabalho_id,bigint,sim,nao,postos_trabalho,id,Posto atribuido
+Operacional,alocacoes,atendimento_id,bigint,nao,nao,atendimentos,id,Atendimento relacionado
+Operacional,alocacoes,colaborador_id,bigint,sim,nao,colaboradores,id,Colaborador alocado
+Operacional,alocacoes,funcao_operacional_id,bigint,sim,nao,funcoes_operacionais,id,Funcao exercida
+Operacional,alocacoes,origem_alocacao,varchar(30),sim,nao,,,Manual ou automatica
+Operacional,escala_publicada,id,bigint,sim,sim,,,Identificador da escala publicada
+Operacional,escala_publicada,filial_id,bigint,sim,nao,filiais,id,Filial da escala
+Operacional,escala_publicada,periodo_inicio,date,sim,nao,,,Inicio do periodo
+Operacional,escala_publicada,periodo_fim,date,sim,nao,,,Fim do periodo
+Operacional,escala_publicada,data_geracao,timestamp,sim,nao,,,Momento da geracao
+Operacional,escala_publicada,gerado_por_usuario_id,bigint,sim,nao,usuarios,id,Usuario que gerou
+Operacional,escala_itens,id,bigint,sim,sim,,,Identificador do item da escala
+Operacional,escala_itens,escala_publicada_id,bigint,sim,nao,escala_publicada,id,Cabecalho da escala
+Operacional,escala_itens,data,date,sim,nao,,,Data da escala
+Operacional,escala_itens,colaborador_id,bigint,sim,nao,colaboradores,id,Colaborador escalado
+Operacional,escala_itens,turno_id,bigint,sim,nao,turnos,id,Turno
+Operacional,escala_itens,posto_trabalho_id,bigint,nao,nao,postos_trabalho,id,Posto previsto
+Operacional,escala_itens,funcao_operacional_id,bigint,nao,nao,funcoes_operacionais,id,Funcao prevista
+Operacional,escala_itens,atendimento_id,bigint,nao,nao,atendimentos,id,Atendimento relacionado
+Operacional,escala_itens,tipo_alocacao,varchar(30),sim,nao,,,Tipo de alocacao
+Operacional,escala_itens,origem,varchar(30),sim,nao,,,Origem da escala
+Operacional,ocorrencias_operacionais,id,bigint,sim,sim,,,Identificador da ocorrencia
+Operacional,ocorrencias_operacionais,atendimento_id,bigint,nao,nao,atendimentos,id,Atendimento relacionado
+Operacional,ocorrencias_operacionais,colaborador_id,bigint,nao,nao,colaboradores,id,Colaborador envolvido
+Operacional,ocorrencias_operacionais,posto_trabalho_id,bigint,nao,nao,postos_trabalho,id,Posto relacionado
+Operacional,ocorrencias_operacionais,tipo_ocorrencia,varchar(50),sim,nao,,,Tipo da ocorrencia
+Operacional,ocorrencias_operacionais,descricao,text,sim,nao,,,Descricao detalhada
+Operacional,ocorrencias_operacionais,severidade,varchar(20),sim,nao,,,Severidade
+Operacional,ocorrencias_operacionais,data_hora,timestamp,sim,nao,,,Momento da ocorrencia
+Operacional,ocorrencias_operacionais,responsavel_tratativa_id,bigint,nao,nao,usuarios,id,Responsavel pela tratativa
+RH,colaboradores,id,bigint,sim,sim,,,Identificador do colaborador
+RH,colaboradores,matricula,varchar(30),sim,nao,,,Matricula interna
+RH,colaboradores,nome,varchar(150),sim,nao,,,Nome completo
+RH,colaboradores,cpf,varchar(14),sim,nao,,,CPF
+RH,colaboradores,rg,varchar(20),nao,nao,,,RG
+RH,colaboradores,data_nascimento,date,nao,nao,,,Data de nascimento
+RH,colaboradores,telefone,varchar(30),nao,nao,,,Telefone
+RH,colaboradores,email,varchar(150),nao,nao,,,Email
+RH,colaboradores,endereco,text,nao,nao,,,Endereco
+RH,colaboradores,data_admissao,date,sim,nao,,,Data de admissao
+RH,colaboradores,data_desligamento,date,nao,nao,,,Data de desligamento
+RH,colaboradores,filial_id,bigint,sim,nao,filiais,id,Filial do colaborador
+RH,colaboradores,setor_id,bigint,nao,nao,setores,id,Setor do colaborador
+RH,colaboradores,cargo_id,bigint,sim,nao,cargos,id,Cargo atual
+RH,colaboradores,tipo_contrato,varchar(30),sim,nao,,,Tipo de contrato
+RH,colaborador_funcoes,id,bigint,sim,sim,,,Identificador da habilitacao
+RH,colaborador_funcoes,colaborador_id,bigint,sim,nao,colaboradores,id,Colaborador habilitado
+RH,colaborador_funcoes,funcao_operacional_id,bigint,sim,nao,funcoes_operacionais,id,Funcao habilitada
+RH,colaborador_funcoes,nivel_proficiencia,varchar(30),nao,nao,,,Nivel de proficiencia
+RH,colaborador_funcoes,principal,boolean,sim,nao,,,Indica funcao principal
+RH,treinamentos,id,bigint,sim,sim,,,Identificador do treinamento
+RH,treinamentos,nome,varchar(150),sim,nao,,,Nome do treinamento
+RH,treinamentos,descricao,text,nao,nao,,,Descricao
+RH,treinamentos,validade_meses,int,nao,nao,,,Validade em meses
+RH,treinamentos,obrigatorio,boolean,sim,nao,,,Indica obrigatoriedade
+RH,colaborador_treinamentos,id,bigint,sim,sim,,,Identificador do treinamento realizado
+RH,colaborador_treinamentos,colaborador_id,bigint,sim,nao,colaboradores,id,Colaborador treinado
+RH,colaborador_treinamentos,treinamento_id,bigint,sim,nao,treinamentos,id,Treinamento realizado
+RH,colaborador_treinamentos,data_realizacao,date,sim,nao,,,Data de realizacao
+RH,colaborador_treinamentos,data_validade,date,nao,nao,,,Data de validade
+RH,afastamentos,id,bigint,sim,sim,,,Identificador do afastamento
+RH,afastamentos,colaborador_id,bigint,sim,nao,colaboradores,id,Colaborador afastado
+RH,afastamentos,tipo_afastamento,varchar(50),sim,nao,,,Tipo do afastamento
+RH,afastamentos,data_inicio,date,sim,nao,,,Inicio do afastamento
+RH,afastamentos,data_fim,date,nao,nao,,,Fim do afastamento
+RH,afastamentos,motivo,text,nao,nao,,,Motivo do afastamento
+RH,ferias,id,bigint,sim,sim,,,Identificador das ferias
+RH,ferias,colaborador_id,bigint,sim,nao,colaboradores,id,Colaborador em ferias
+RH,ferias,periodo_aquisitivo_inicio,date,sim,nao,,,Inicio do periodo aquisitivo
+RH,ferias,periodo_aquisitivo_fim,date,sim,nao,,,Fim do periodo aquisitivo
+RH,ferias,data_inicio,date,sim,nao,,,Inicio das ferias
+RH,ferias,data_fim,date,sim,nao,,,Fim das ferias
+RH,jornadas_colaborador,id,bigint,sim,sim,,,Identificador da jornada atribuida
+RH,jornadas_colaborador,colaborador_id,bigint,sim,nao,colaboradores,id,Colaborador relacionado
+RH,jornadas_colaborador,tipo_jornada_id,bigint,sim,nao,tipos_jornada,id,Tipo de jornada
+RH,jornadas_colaborador,data_inicio,date,sim,nao,,,Inicio da vigencia
+RH,jornadas_colaborador,data_fim,date,nao,nao,,,Fim da vigencia
+Auditoria,auditoria_logs,id,bigint,sim,sim,,,Identificador do log de auditoria
+Auditoria,auditoria_logs,tabela_nome,varchar(120),sim,nao,,,Tabela alterada
+Auditoria,auditoria_logs,registro_id,bigint,sim,nao,,,Registro alterado
+Auditoria,auditoria_logs,acao,varchar(30),sim,nao,,,Tipo de acao
+Auditoria,auditoria_logs,dados_anteriores,json,nao,nao,,,Payload anterior
+Auditoria,auditoria_logs,dados_novos,json,nao,nao,,,Payload novo
+Auditoria,auditoria_logs,usuario_id,bigint,nao,nao,usuarios,id,Usuario responsavel
+Auditoria,auditoria_logs,data_hora,timestamp,sim,nao,,,Momento do evento
+Auditoria,auditoria_logs,ip_origem,varchar(45),nao,nao,,,IP de origem
+Auditoria,auditoria_logs,origem_sistema,varchar(30),nao,nao,,,Web API job etc
+Auditoria,auditoria_logs,observacoes,text,nao,nao,,,Contexto adicional
+Auditoria,sistema_logs,id,bigint,sim,sim,,,Identificador do log tecnico
+Auditoria,sistema_logs,tipo_log,varchar(30),sim,nao,,,Tipo do log
+Auditoria,sistema_logs,modulo,varchar(80),sim,nao,,,Modulo de origem
+Auditoria,sistema_logs,mensagem,text,sim,nao,,,Mensagem principal
+Auditoria,sistema_logs,detalhes,text,nao,nao,,,Detalhes complementares
+Auditoria,sistema_logs,stack_trace,text,nao,nao,,,Stack trace quando houver
+Auditoria,sistema_logs,usuario_id,bigint,nao,nao,usuarios,id,Usuario associado
+Auditoria,sistema_logs,data_hora,timestamp,sim,nao,,,Momento do evento
+Auditoria,sistema_logs,origem,varchar(30),nao,nao,,,Origem do log

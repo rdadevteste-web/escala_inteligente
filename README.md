@@ -11,12 +11,14 @@ docs/
   03-tabelas.md
   04-regras-de-negocio.md
   05-auditoria-e-logs.md
+  06-modelo-logico-mvp.md
 backend/
 frontend/
 database/
   migrations/
   seeds/
   diagramas/
+    mvp-dicionario-dados.csv
 ```
 
 ## Documentos
@@ -26,7 +28,9 @@ database/
 * [Tabelas por modulo](docs/03-tabelas.md)
 * [Regras de negocio](docs/04-regras-de-negocio.md)
 * [Auditoria e logs](docs/05-auditoria-e-logs.md)
+* [Modelo logico MVP](docs/06-modelo-logico-mvp.md)
+* [Dicionario de dados MVP CSV](database/diagramas/mvp-dicionario-dados.csv)
 
 ## Proximo passo recomendado
 
-Transformar a documentacao em modelo logico e, a partir dela, gerar as primeiras migrations do banco.
+Validar o dicionario de dados do MVP, definir indices e restricoes, e entao gerar as primeiras migrations do banco.

@@ -12,6 +12,7 @@
 
 ```text
 backend/
+  scripts/
   src/
     app.js
     server.js
@@ -51,7 +52,13 @@ backend/
 * Senhas sao armazenadas com hash via `scrypt` nativo do Node.
 * O endpoint `POST /api/v1/administracao/auth/login` valida `login` e `senha`.
 * O login retorna token assinado em HMAC SHA-256 com `sub`, perfis e permissoes.
-* As rotas administrativas agora exigem Bearer token e validam permissao por chave como `administracao:gerenciar_usuarios`.
+* As rotas administrativas exigem Bearer token e validam permissao por chave como `administracao:gerenciar_usuarios`.
+
+## Bootstrap inicial
+
+* O script `backend/scripts/seed-admin.js` cria o bootstrap de acesso.
+* Ele cria ou atualiza usuario administrador, perfil Administrador, permissoes administrativas e vinculos RBAC.
+* O script e idempotente para os registros principais do bootstrap.
 
 ## CRUD inicial implementado
 
@@ -68,7 +75,6 @@ O modulo `administracao` ja possui CRUD inicial para:
 
 ## Proximo incremento sugerido
 
-1. Criar seed inicial de permissoes e perfil administrador.
-2. Adicionar middleware reutilizavel para popular contexto autenticado na aplicacao inteira.
-3. Abrir `funcoes_operacionais`, `tipos_jornada` e `escalas_modelo`.
-4. Depois iniciar Comercial no mesmo padrao.
+1. Criar middleware reutilizavel para anexar sessao autenticada ao contexto da request.
+2. Abrir `funcoes_operacionais`, `tipos_jornada` e `escalas_modelo`.
+3. Depois iniciar Comercial no mesmo padrao.

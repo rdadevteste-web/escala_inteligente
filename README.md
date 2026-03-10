@@ -14,6 +14,7 @@ docs/
   06-modelo-logico-mvp.md
   07-arquitetura-backend.md
 backend/
+  scripts/
   package.json
   .env.example
   src/
@@ -24,6 +25,7 @@ database/
     003_admin_rbac_indexes.sql
     004_admin_structure_uniqueness.sql
   seeds/
+    001_admin_bootstrap.md
   diagramas/
     mvp-dicionario-dados.csv
 frontend/
@@ -39,6 +41,7 @@ frontend/
 * [Modelo logico MVP](docs/06-modelo-logico-mvp.md)
 * [Arquitetura backend](docs/07-arquitetura-backend.md)
 * [Dicionario de dados MVP CSV](database/diagramas/mvp-dicionario-dados.csv)
+* [Bootstrap admin seed](database/seeds/001_admin_bootstrap.md)
 
 ## Backend inicial
 
@@ -50,27 +53,33 @@ A base do backend foi criada em Node.js ESM, com modulos isolados para `administ
 cd backend
 Copy-Item .env.example .env
 npm.cmd install
+npm.cmd run seed:admin
 node src/server.js
 ```
 
+### Bootstrap de acesso
+
+O seed administrativo cria ou atualiza:
+
+* usuario administrador
+* perfil `Administrador`
+* permissoes administrativas padrao
+* vinculos de `usuario_perfis`
+* vinculos de `perfil_permissoes`
+
+Credenciais padrao do bootstrap:
+
+* login: `admin`
+* senha: `Admin@123`
+
+Esses valores podem ser sobrescritos com `ADMIN_SEED_NAME`, `ADMIN_SEED_EMAIL`, `ADMIN_SEED_LOGIN`, `ADMIN_SEED_PASSWORD` e `ADMIN_SEED_PROFILE`.
+
 ### Fluxo minimo de acesso
 
-1. Criar um usuario diretamente no banco ou via endpoint com contexto autorizado.
-2. Vincular perfis e permissoes.
+1. Aplicar migrations no PostgreSQL.
+2. Rodar `npm.cmd run seed:admin` em `backend/`.
 3. Fazer login em `POST /api/v1/administracao/auth/login`.
-4. Enviar `Authorization: Bearer <token>` nas demais rotas protegidas.
-
-### Rotas administrativas iniciais
-
-* `POST /api/v1/administracao/auth/login`
-* `GET|POST|PUT|DELETE /api/v1/administracao/usuarios...`
-* `GET|POST|PUT|DELETE /api/v1/administracao/perfis...`
-* `GET|POST|PUT|DELETE /api/v1/administracao/permissoes...`
-* `GET|POST|DELETE /api/v1/administracao/usuarios/:id/perfis...`
-* `GET|POST|DELETE /api/v1/administracao/perfis/:id/permissoes...`
-* `GET|POST|PUT|DELETE /api/v1/administracao/aeroportos...`
-* `GET|POST|PUT|DELETE /api/v1/administracao/filiais...`
-* `GET|POST|PUT|DELETE /api/v1/administracao/cargos...`
+4. Enviar `Authorization: Bearer <token>` nas rotas protegidas.
 
 ## Banco de dados
 
@@ -78,4 +87,4 @@ As migrations [001_initial_foundation.sql](database/migrations/001_initial_found
 
 ## Proximo passo recomendado
 
-Criar seeds iniciais de permissoes e perfil administrador para permitir bootstrap completo do acesso sem insercao manual em banco.
+Abrir `funcoes_operacionais`, `tipos_jornada` e `escalas_modelo`, e em seguida iniciar o modulo Comercial no mesmo padrao.

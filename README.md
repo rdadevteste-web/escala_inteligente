@@ -20,6 +20,7 @@ backend/
 database/
   migrations/
     001_initial_foundation.sql
+    002_admin_uniqueness.sql
   seeds/
   diagramas/
     mvp-dicionario-dados.csv
@@ -50,16 +51,31 @@ npm.cmd install
 node src/server.js
 ```
 
-Rotas iniciais:
+Rotas iniciais de Administracao:
 
-* `GET /`
-* `GET /health`
-* `GET /api/v1/administracao`
 * `GET /api/v1/administracao/usuarios`
 * `GET /api/v1/administracao/usuarios/:id`
 * `POST /api/v1/administracao/usuarios`
 * `PUT /api/v1/administracao/usuarios/:id`
 * `DELETE /api/v1/administracao/usuarios/:id`
+* `GET /api/v1/administracao/perfis`
+* `GET /api/v1/administracao/perfis/:id`
+* `POST /api/v1/administracao/perfis`
+* `PUT /api/v1/administracao/perfis/:id`
+* `DELETE /api/v1/administracao/perfis/:id`
+* `GET /api/v1/administracao/permissoes`
+* `GET /api/v1/administracao/permissoes/:id`
+* `POST /api/v1/administracao/permissoes`
+* `PUT /api/v1/administracao/permissoes/:id`
+* `DELETE /api/v1/administracao/permissoes/:id`
+* `GET /api/v1/administracao/usuarios/:id/perfis`
+* `POST /api/v1/administracao/usuarios/:id/perfis`
+* `DELETE /api/v1/administracao/usuarios/:id/perfis/:assignmentId`
+
+Rotas modulares de base:
+
+* `GET /`
+* `GET /health`
 * `GET /api/v1/comercial`
 * `GET /api/v1/operacional`
 * `GET /api/v1/rh`
@@ -69,8 +85,8 @@ Para propagar o usuario responsavel para auditoria automatica no banco, envie o 
 
 ## Banco de dados
 
-A migration [001_initial_foundation.sql](database/migrations/001_initial_foundation.sql) cria a base inicial de Administracao, `auditoria_logs`, `sistema_logs` e triggers para rastrear `insert`, `update` e `delete` nas tabelas criadas.
+As migrations [001_initial_foundation.sql](database/migrations/001_initial_foundation.sql) e [002_admin_uniqueness.sql](database/migrations/002_admin_uniqueness.sql) criam a base inicial de Administracao, `auditoria_logs`, `sistema_logs`, triggers de auditoria e restricoes de unicidade para o modulo.
 
 ## Proximo passo recomendado
 
-Aplicar a migration no PostgreSQL e evoluir Administracao com perfis, permissoes e autenticacao antes de abrir os proximos modulos de negocio.
+Fechar RBAC com `perfil_permissoes`, adicionar autenticacao e depois abrir `filiais`, `aeroportos` e `cargos` como proxima camada administrativa.

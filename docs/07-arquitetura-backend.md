@@ -40,6 +40,7 @@ backend/
 ## Banco e auditoria
 
 * A migration `database/migrations/001_initial_foundation.sql` cria a base de Administracao e a infraestrutura de logs.
+* A migration `database/migrations/002_admin_uniqueness.sql` adiciona indices unicos para segurar integridade sem depender apenas da aplicacao.
 * A funcao `audit_row_changes()` registra `insert`, `update` e `delete` em `auditoria_logs`.
 * A funcao `set_row_timestamps()` padroniza `created_at` e `updated_at`.
 * `sistema_logs` fica reservado para falhas tecnicas, integracoes e eventos de runtime.
@@ -47,17 +48,34 @@ backend/
 
 ## CRUD inicial implementado
 
-O modulo `administracao` ja possui CRUD inicial de `usuarios`:
+O modulo `administracao` ja possui CRUD inicial para:
+
+* `usuarios`
+* `perfis_acesso`
+* `permissoes`
+* vinculo `usuario_perfis`
+
+Rotas principais:
 
 * `GET /api/v1/administracao/usuarios`
-* `GET /api/v1/administracao/usuarios/:id`
 * `POST /api/v1/administracao/usuarios`
 * `PUT /api/v1/administracao/usuarios/:id`
 * `DELETE /api/v1/administracao/usuarios/:id`
+* `GET /api/v1/administracao/perfis`
+* `POST /api/v1/administracao/perfis`
+* `PUT /api/v1/administracao/perfis/:id`
+* `DELETE /api/v1/administracao/perfis/:id`
+* `GET /api/v1/administracao/permissoes`
+* `POST /api/v1/administracao/permissoes`
+* `PUT /api/v1/administracao/permissoes/:id`
+* `DELETE /api/v1/administracao/permissoes/:id`
+* `GET /api/v1/administracao/usuarios/:id/perfis`
+* `POST /api/v1/administracao/usuarios/:id/perfis`
+* `DELETE /api/v1/administracao/usuarios/:id/perfis/:assignmentId`
 
 ## Proximo incremento sugerido
 
-1. Aplicar a migration em um PostgreSQL real.
-2. Implementar persistencia de perfis, permissoes e filiais.
-3. Criar segunda migration com Comercial, RH e Operacional.
-4. Adicionar autenticacao e hash real de senha.
+1. Implementar `perfil_permissoes` para fechar o RBAC.
+2. Adicionar autenticacao e hash real de senha.
+3. Criar segunda onda de repositorios para `filiais`, `aeroportos` e `cargos`.
+4. Depois abrir Comercial, RH e Operacional no mesmo padrao.
